@@ -1,0 +1,2 @@
+# smilerecognition
+Projekt Pracy Magisterskiej
