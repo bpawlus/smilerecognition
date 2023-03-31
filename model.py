@@ -1,10 +1,5 @@
-import numpy as np
 import torch
-import torch.nn.functional as F
-import math
 from torch import nn
-import matplotlib.pyplot as plt
-from visualizations import scorecam
 
 # NonLocalBlock: https://github.com/AlexHex7/Non-local_pytorch/tree/master/lib
 class _NonLocalBlockND(nn.Module):
@@ -87,8 +82,6 @@ class _NonLocalBlockND(nn.Module):
             return z, f_div_C
         return z
 
-
-
 class NONLocalBlock2D(_NonLocalBlockND):
     def __init__(self, in_channels, inter_channels=None, sub_sample=True, bn_layer=True):
         super(NONLocalBlock2D, self).__init__(in_channels,
@@ -97,12 +90,9 @@ class NONLocalBlock2D(_NonLocalBlockND):
                                               bn_layer=bn_layer)
 
 
-
 # CONVLSTM: https://github.com/ndrplz/ConvLSTM_pytorch/blob/master/convlstm.py
 class ConvLSTMCell(nn.Module):
-
     def __init__(self, input_dim, hidden_dim):
-
         super(ConvLSTMCell, self).__init__()
 
         self.input_dim = input_dim
@@ -130,32 +120,22 @@ class ConvLSTMCell(nn.Module):
 
         return h_next, c_next
 
-
-
     def init_hidden(self, batch_size, height, width):
-
         return (torch.zeros(batch_size, self.hidden_dim, height, width, device=self.conv.weight.device),
                 torch.zeros(batch_size, self.hidden_dim, height, width, device=self.conv.weight.device))
 
-
-
 class ConvLSTM(nn.Module):
-
-
     def __init__(self, input_dim, hidden_dim):
         super(ConvLSTM, self).__init__()
 
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
-        self.cell  = ConvLSTMCell(input_dim=self.input_dim,
-                                  hidden_dim=self.hidden_dim)
+        self.cell  = ConvLSTMCell(input_dim=self.input_dim, hidden_dim=self.hidden_dim)
 
     def forward(self, input_tensor,time = None):
-
         b, _, _, h, w = input_tensor.size()
 
         hidden_state = self.cell.init_hidden(b, h, w)
-
         seq_len = input_tensor.size(1)
 
         h, c = hidden_state
@@ -170,222 +150,21 @@ class ConvLSTM(nn.Module):
         return h
 
 
-# resnet: https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py and https://github.com/zhunzhong07/Random-Erasing/blob/master/models/cifar/resnet.py
-def conv3x3(in_planes, out_planes, stride=1):
-    "3x3 convolution with padding"
-    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
-                     padding=1, bias=False)
+#Conv2d + BN + RELU
+class Convbn(nn.Module):
+    def __init__(self,ins,ous,kernel,padding = 0):
+        super(Convbn,self).__init__()
 
+        self.conv = nn.Conv2d(ins,ous,kernel,padding = padding)
+        self.bn = nn.BatchNorm2d(ous)
+        self.relu = nn.ReLU(inplace = True)
 
-class BasicBlock(nn.Module):
-    expansion = 1
-
-    def __init__(self, inplanes, planes, stride=1, downsample=None):
-        super(BasicBlock, self).__init__()
-        self.conv1 = conv3x3(inplanes, planes, stride)
-        self.bn1 = nn.BatchNorm2d(planes)
-        self.relu = nn.ReLU(inplace=True)
-        self.conv2 = conv3x3(planes, planes)
-        self.bn2 = nn.BatchNorm2d(planes)
-        self.downsample = downsample
-        self.stride = stride
-
-    def forward(self, x):
-        residual = x
-
-        out = self.conv1(x)
-        out = self.bn1(out)
-        out = self.relu(out)
-
-        out = self.conv2(out)
-        out = self.bn2(out)
-
-        if self.downsample is not None:
-            residual = self.downsample(x)
-
-        out += residual
-        out = self.relu(out)
-
-        return out
-
-
-class ResNet(nn.Module):
-
-    def __init__(self, depth):
-        super(ResNet, self).__init__()
-
-        assert depth  % 6 == 0, 'depth should be 6n'
-        n = depth // 6
-
-        block = BasicBlock
-
-        self.inplanes = 16
-        self.conv1 = nn.Conv2d(3, 16, kernel_size=3, padding=1,
-                               bias=False)
-        self.bn1 = nn.BatchNorm2d(16)
-        self.relu = nn.ReLU(inplace=True)
-        self.layer1 = self._make_layer(block, 16, n)
-        self.layer2 = self._make_layer(block, 32, n, stride=2)
-        self.layer3 = self._make_layer(block, 64, n, stride=2)
-
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
-                m.weight.data.normal_(0, math.sqrt(2. / n))
-            elif isinstance(m, nn.BatchNorm2d):
-                m.weight.data.fill_(1)
-                m.bias.data.zero_()
-
-    def _make_layer(self, block, planes, blocks, stride=1):
-        downsample = None
-        if stride != 1 or self.inplanes != planes * block.expansion:
-            downsample = nn.Sequential(
-                nn.Conv2d(self.inplanes, planes * block.expansion,
-                          kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm2d(planes * block.expansion),
-            )
-
-        layers = []
-        layers.append(block(self.inplanes, planes, stride, downsample))
-        self.inplanes = planes * block.expansion
-        for i in range(1, blocks):
-            layers.append(block(self.inplanes, planes))
-
-        return nn.Sequential(*layers)
-
-    def forward(self, x):
-        x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.relu(x)    # 48x48
-
-        x = self.layer1(x)  # 48x48
-        x = self.layer2(x)  # 24x24
-        x = self.layer3(x)  # 12x12
-
-        return x
-
-
-def resnet12(**kwargs):
-    return ResNet(12)
-
-
-
-#AlexNet: https://github.com/pytorch/vision/blob/master/torchvision/models/alexnet.py
-class miniAlexNet(nn.Module):
-    def __init__(self):
-        super(miniAlexNet, self).__init__()
-        self.features = nn.Sequential(
-            nn.Conv2d(3, 16, kernel_size= 3, stride= 1, padding=1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=2,padding = 1),
-            nn.Conv2d(16, 48, kernel_size=5, padding=2),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=2, padding = 1),
-            nn.Conv2d(48, 96, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(96, 64, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(64, 64, kernel_size=3, padding=1),
-            nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=2,padding=1),
-        )
-
-    def forward(self, x):
-        x = self.features(x)
-        return x
-
-
-
-#DenseNet: https://github.com/kuangliu/pytorch-cifar/blob/master/models/densenet.py
-class DenseBlock(nn.Module):
-    def __init__(self, in_planes, growth_rate):
-        super(DenseBlock, self).__init__()
-        self.bn1 = nn.BatchNorm2d(in_planes)
-        self.conv1 = nn.Conv2d(in_planes, 4*growth_rate, kernel_size=1, bias=False)
-        self.bn2 = nn.BatchNorm2d(4*growth_rate)
-        self.conv2 = nn.Conv2d(4*growth_rate, growth_rate, kernel_size=3, padding=1, bias=False)
-
-    def forward(self, x):
-        out = self.conv1(F.relu(self.bn1(x)))
-        out = self.conv2(F.relu(self.bn2(out)))
-        out = torch.cat([out,x], 1)
-        return out
-
-
-
-class Transition(nn.Module):
-    def __init__(self, in_planes, out_planes,last = False):
-        super(Transition, self).__init__()
-        self.bn   = nn.BatchNorm2d(in_planes)
-        self.conv = nn.Conv2d(in_planes, out_planes, kernel_size=1, bias=False)
-        self.last = last
-
-    def forward(self, x):
-        stride = self.last and 1 or 2
-        out = self.conv(F.relu(self.bn(x)))
-        out = F.avg_pool2d(out, 2,stride)
-        return out
-
-
-
-class DenseNet(nn.Module):
-    def __init__(self, block, nblocks, growth_rate=12):
-        super(DenseNet, self).__init__()
-        self.growth_rate = growth_rate
-
-        num_planes = 2*growth_rate
-        self.conv1 = nn.Conv2d(3, num_planes, kernel_size=3, padding=1, bias=False)
-
-        self.dense1 = self._make_dense_layers(block, num_planes, nblocks[0])
-        num_planes += nblocks[0]*growth_rate
-        out_planes = int(math.floor(num_planes//2))
-        self.trans1 = Transition(num_planes, out_planes)
-        num_planes = out_planes
-
-        self.dense2 = self._make_dense_layers(block, num_planes, nblocks[1])
-        num_planes += nblocks[1]*growth_rate
-        out_planes = int(math.floor(num_planes//2))
-        self.trans2 = Transition(num_planes, out_planes)
-        num_planes = out_planes
-
-        self.dense3 = self._make_dense_layers(block, num_planes, nblocks[2])
-        num_planes += nblocks[2]*growth_rate
-        out_planes = int(math.floor(num_planes//2))
-        self.trans3 = Transition(num_planes, out_planes,last = True)
-        num_planes = out_planes
-
-        self.dense4 = self._make_dense_layers(block, num_planes, nblocks[3])
-        num_planes += nblocks[3]*growth_rate
-
-        self.bn = nn.BatchNorm2d(num_planes)
-
-    def _make_dense_layers(self, block, in_planes, nblock):
-        layers = []
-        for i in range(nblock):
-            layers.append(block(in_planes, self.growth_rate))
-            in_planes += self.growth_rate
-        return nn.Sequential(*layers)
-
-    def forward(self, x):
-        out = self.conv1(x)
-        out = self.trans1(self.dense1(out))
-        out = self.trans2(self.dense2(out))
-        out = self.trans3(self.dense3(out))
-        out = self.dense4(out)
-        out = F.relu(self.bn(out))
-        return out
-
-
-
-def miniDensenet():
-    return DenseNet(DenseBlock, [6,12,24,16], growth_rate=2)
-
+    def forward(self,x):
+        return self.relu(self.bn(self.conv(x)))
 
 
 class TemporalAttension(nn.Module):
-
     def __init__(self,channels):
-
         super(TemporalAttension,self).__init__()
 
         self.conv = nn.Conv2d(channels,channels,3,padding = 1)
@@ -394,7 +173,6 @@ class TemporalAttension(nn.Module):
         init[1,1] = 1
 
         self.conv.weight.data.copy_(init)
-
         self.conv.bias.data.copy_(torch.zeros(channels))
 
     def forward(self, x):
@@ -403,107 +181,28 @@ class TemporalAttension(nn.Module):
         o = x2 - x1
 
         o = torch.cat((torch.zeros((x.size(0),1,x.size(2),x.size(3),x.size(4)),device = x.device),o),1)
-        o_preview2 = o.cpu().data.numpy()
         o = o.view(-1,x.size(2),x.size(3),x.size(4))
         x = self.conv(o).view(x.size()) * x + x
 
         return x
 
 
-
-#Conv2d + BN + RELU
-class Convbn(nn.Module):
-
-    def __init__(self,ins,ous,kernel,padding = 0):
-
-        super(Convbn,self).__init__()
-
-        self.conv = nn.Conv2d(ins,ous,kernel,padding = padding)
-        self.bn   = nn.BatchNorm2d(ous)
-        self.relu = nn.ReLU(inplace = True)
-
-    def forward(self,x):
-
-        return self.relu(self.bn(self.conv(x)))
-
-
-
-class BI_CONVLSTM(nn.Module):
-
-    def __init__(self,ins,outs):
-
-        super(BI_CONVLSTM,self).__init__()
-
-        self.fconv = ConvLSTM(ins,outs)
-        self.bconv = ConvLSTM(ins,outs)
-
-    def forward(self,x,s):
-        xs = x.clone()
-        f = self.fconv(x,time = s)
-
-        batch,time_step,c,h,w  = x.size()
-
-        for idx in range(batch):
-            xs[idx,s[idx]:] = xs[idx,s[idx]:].flip(0)
-
-        b = self.bconv(xs,time = s)
-
-        return torch.cat((f,b),dim=1)
-
-
-
 class DeepSmileNet(nn.Module):
-    def __init__(self, cfg = [4,'M', 6, 'M'],re = "org"):
+    def __init__(self):
         super(DeepSmileNet,self).__init__()
 
-        if re == "resnet":
-            self.encoder = resnet12()
-        elif re == "miniAlexnet":
-            self.encoder = miniAlexNet()
-        elif re == "minidensenet":
-            self.encoder = miniDensenet()
-        else:
-            self.encoder = self._make_layers([4,'M', 6, 'M'])
-
-        if re == "GRU":
-            self.decoder = nn.GRU(864,256,batch_first = True)
-        elif re == "LSTM":
-            self.decoder = nn.LSTM(864, 256,batch_first = True)
-        elif re == "org":
-            #Oryginalne
-            self.TA = TemporalAttension(3)
-            self.decoder = ConvLSTM(6,8)
-        else:
-            self.decoder = ConvLSTM(64,64)
-
-        if re not in ["GRU","LSTM","org"]:
-            self.pool = nn.Sequential(
-                NONLocalBlock2D(64),
-                nn.Conv2d(64, 80, 3),
-                nn.BatchNorm2d(80),
-                nn.ReLU(),
-                nn.AdaptiveAvgPool2d((2,2)),
-                nn.Flatten(),
-                nn.Linear(320,1),
-                nn.Sigmoid(),
-                )
-        elif re == "org":
-            # Oryginalne
-            self.pool = nn.Sequential(
-                NONLocalBlock2D(8),
-                nn.AvgPool2d(kernel_size = 2, stride = 2),
-                Convbn(8,10,2),
-                nn.Dropout(0.5),
-                nn.Flatten(),
-                nn.Linear(250,1),
-                nn.Sigmoid()
-                )
-        else:
-            self.pool = nn.Sequential(
-                nn.Linear(256, 1),
-                nn.Sigmoid()
-                )
-        self.re = re
+        self.TSA = TemporalAttension(3)
+        self.FPN = self._make_layers([4,'M', 6, 'M'])
+        self.ConvLSTMLayer = ConvLSTM(6,8)
+        self.Classification = nn.Sequential(
+            NONLocalBlock2D(8),
+            nn.AvgPool2d(kernel_size = 2, stride = 2),
+            Convbn(8,10,2),
+            nn.Dropout(0.5),
+            nn.Flatten(),
+            nn.Linear(250,1),
+            nn.Sigmoid()
+        )
 
     def _make_layers(self,cfg,in_channels = 3):
         layers = [nn.BatchNorm2d(in_channels)]
@@ -534,19 +233,17 @@ class DeepSmileNet(nn.Module):
 
     def forward(self,x,s):
         # TSA block
-        if self.re == "org":
-            x = self.TA(x)
+        x = self.TSA(x)
 
         # FPN block
         batch_size, timesteps, C, H, W = x.size()
         input_x = []
 
-        #pozbywanie się pustych klatek
-        for l in range(x.size(0)):
+        for l in range(x.size(0)): # Pozbywanie się pustych klatek
             input_x.append(x[l,s[l]:,:,:,:])
 
         input_x = torch.cat(input_x,0)
-        out = self.encoder(input_x)
+        out = self.FPN(input_x)
 
         # ConvLTSM block
         current = 0
@@ -558,14 +255,9 @@ class DeepSmileNet(nn.Module):
             current+= timesteps - l
         x  = reshape_out
 
-        if self.re not in ["GRU","LSTM"]:
-            #Oryginalne
-            x = self.decoder(x,s)
-        else:
-            x,_ = self.decoder(x.view(batch_size,timesteps,-1))
-            x= x[:,-1,:]
+        x = self.ConvLSTMLayer(x,s)
 
         # Classification block
-        x = self.pool(x)
+        x = self.Classification(x)
 
         return x
