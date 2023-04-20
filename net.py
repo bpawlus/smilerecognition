@@ -4,20 +4,31 @@ from model import DeepSmileNet
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
+from PyQt6.QtWidgets import QApplication, QWidget
+import sys
 
 class UVANEMO():
-    def __init__(self, epochs, lr, label_path, frame_path, frequency, batch_size, output_model_path, verbose_path, out_plot):
+    def __init__(self, epochs, lr, label_path, videos_path, videos_frequency, features_path, vgg_path, batch_size, output_model_path, verbose_path, out_plot, calcminmax_features):
         self.epochs = epochs
         self.lr = lr
         self.label_path = label_path
-        self.frame_path = frame_path
-        self.frequency = frequency
+        self.videos_path = videos_path
+        self.videos_frequency = videos_frequency
+        self.features_path = features_path
+        self.vgg_path = vgg_path
         self.batch_size = batch_size
         self.output_model_path = output_model_path
         self.verbose_path = verbose_path
         self.out_plot = out_plot
         self.training_generator = None
         self.test_generator = None
+        self.calcminmax_features = calcminmax_features
+
+        self.__init_app()
+
+    def __init_app(self):
+        self.app = QApplication(sys.argv)
+        self.window = QWidget()
 
     def loss_func_weighted(self, output, target, weights):
         #weighted binary cross entropy
@@ -41,8 +52,12 @@ class UVANEMO():
         #===== TRAIN =====
         train_labels = os.path.join(current_path,"train.json")
         params = {"label_path": train_labels,
-                "frame_path": self.frame_path,
-                "frequency" : self.frequency}
+                "videos_path": self.videos_path,
+                "videos_frequency" : self.videos_frequency,
+                "features_path": self.features_path,
+                "vgg_path": self.vgg_path,
+                "calcminmax_features": self.calcminmax_features
+                }
 
         # ** - unpack do nazwanych argumentów (dictionary)
         dg = UVANEMODataGenerator(**params) #dziedziczy po torch.utils.data.Dataset
@@ -52,8 +67,10 @@ class UVANEMO():
         # ===== VALIDATE =====
         validate_labels = os.path.join(current_path,"validate.json")
         params = {"label_path": validate_labels,
-                "frame_path": self.frame_path,
-                "frequency": self.frequency,
+                "videos_path": self.videos_path,
+                "videos_frequency": self.videos_frequency,
+                "features_path": self.features_path,
+                "vgg_path": self.vgg_path,
                 "test": True}
 
         dg = UVANEMODataGenerator(**params)
@@ -63,8 +80,10 @@ class UVANEMO():
         # ===== TEST =====
         test_labels = os.path.join(current_path,"test.json")
         params = {"label_path": test_labels,
-                "frame_path": self.frame_path,
-                "frequency": self.frequency,
+                "videos_path": self.videos_path,
+                "videos_frequency": self.videos_frequency,
+                "features_path": self.features_path,
+                "vgg_path": self.vgg_path,
                 "test": True}
 
         dg = UVANEMODataGenerator(**params)
@@ -120,17 +139,22 @@ class UVANEMO():
             # y - BATCH SIZE - LABEL
             # s - BATCH SIZE - MAX DŁUGOŚĆ W BATCHU MINUS DŁUGOŚĆ WIDEO OBECNEGO
 
-            for x, y, s in self.training_generator:
+            for x, y, s, aus, si, aus_len in self.training_generator:
                 # Obcinanie, nie kazde wideo jest tej samej dlugosci
+
                 index = s.min().item()
                 s = s - s.min()
                 x = x.type(torch.FloatTensor)[:, index:]
                 y = y.type(torch.FloatTensor)
+                aus = aus.type(torch.FloatTensor)[:, :]
+                si = si.type(torch.FloatTensor)[:, :]
 
                 if torch.cuda.device_count() > 0:
                     x = x.to(device)
                     y = y.to(device)
                     s = s.to(device)
+                    aus = aus.to(device)
+                    si = si.to(device)
 
                 # fig, axs = plt.subplots(3)
                 # fig.suptitle('H')
@@ -140,7 +164,7 @@ class UVANEMO():
                 #     axs[i].imshow(h)
                 # plt.show()
 
-                pred = self.architecture(x, s)
+                pred = self.architecture(x, s, aus, si, aus_len)
                 pred_y = (pred >= 0.5).float().to(device).data
 
                 pred_label.append(pred_y)
@@ -180,20 +204,24 @@ class UVANEMO():
             pred_label = []
             true_label = []
 
-            for x, y, s in self.validate_generator:
+            for x, y, s, aus, si, aus_len in self.training_generator:
                 index = s.min().item()
                 s = s - s.min()
                 x = x.type(torch.FloatTensor)[:, index:]
                 y = y.type(torch.FloatTensor)
+                aus = aus.type(torch.FloatTensor)[:, :]
+                si = si.type(torch.FloatTensor)[:, :]
 
                 if torch.cuda.device_count() > 0:
                     x = x.to(device)
                     y = y.to(device)
                     s = s.to(device)
+                    aus = aus.to(device)
+                    si = si.to(device)
 
                 #print("  Validate batch: " + str(x.size()) + " " + str(y.size()) + " " + str(s.size()))
 
-                pred = self.architecture(x, s)
+                pred = self.architecture(x, s, aus, si, aus_len)
                 pred_y = (pred >= 0.5).float().to(device).data
 
                 pred_label.append(pred_y)
@@ -223,10 +251,13 @@ class UVANEMO():
 
             # ===== UPDATE MODEL =====
 
+            filepath = f"{self.output_model_path}/{idx}-{epoch:}-{loss}-{validate_accuracy}.pt"
+            torch.save(self.architecture.state_dict(), filepath)
+
             if validate_accuracy > best_accuracy:
-                filepath = f"{self.output_model_path}/{idx}-{epoch:}-{loss}-{validate_accuracy}.pt"
-                torch.save(self.architecture.state_dict(), filepath)
                 best_accuracy = validate_accuracy
+
+            self.evaluate_last()
 
 
             # ===== =====
@@ -258,4 +289,4 @@ class UVANEMO():
         ax2.legend([line1, line2, line3, line4], ['Loss Train', validate_penalty_str.format(value=self.validate_penalty), 'Accuracy Train', 'Accuracy Validate'], loc='upper center')
 
         fig.savefig(self.out_plot, format='jpeg', dpi=100, bbox_inches='tight')
-        plt.show()
+        #plt.show()

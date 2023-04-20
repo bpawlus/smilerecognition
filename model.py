@@ -1,5 +1,7 @@
 import torch
 from torch import nn
+from torch.nn.utils.rnn import pack_padded_sequence
+from torch.nn.utils.rnn import pad_packed_sequence
 
 # NonLocalBlock: https://github.com/AlexHex7/Non-local_pytorch/tree/master/lib
 class _NonLocalBlockND(nn.Module):
@@ -130,7 +132,7 @@ class ConvLSTM(nn.Module):
 
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
-        self.cell  = ConvLSTMCell(input_dim=self.input_dim, hidden_dim=self.hidden_dim)
+        self.cell = ConvLSTMCell(input_dim=self.input_dim, hidden_dim=self.hidden_dim)
 
     def forward(self, input_tensor,time = None):
         b, _, _, h, w = input_tensor.size()
@@ -199,10 +201,25 @@ class DeepSmileNet(nn.Module):
             nn.AvgPool2d(kernel_size = 2, stride = 2),
             Convbn(8,10,2),
             nn.Dropout(0.5),
-            nn.Flatten(),
-            nn.Linear(250,1),
+            nn.Flatten(),  # 250
+        )
+
+        #Dodane
+        self.AUsLSTM = nn.LSTM(input_size=17, hidden_size=200, num_layers=1, batch_first=True)
+        self.ClassificationAUs = nn.Sequential(
+            nn.BatchNorm1d(200)
+        )
+
+        self.SILSTM = nn.LSTM(input_size=1, hidden_size=10, num_layers=1, batch_first=True)
+        self.ClassificationSI = nn.Sequential(
+            nn.BatchNorm1d(10)
+        )
+
+        self.ClassificationCat = nn.Sequential(
+            nn.Linear(460, 1), # nn.Linear(460, 1) #250 (Classification) + 200 + 10
             nn.Sigmoid()
         )
+
 
     def _make_layers(self,cfg,in_channels = 3):
         layers = [nn.BatchNorm2d(in_channels)]
@@ -231,7 +248,7 @@ class DeepSmileNet(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def forward(self,x,s):
+    def forward(self,x,s,aus,si,aus_len):
         # TSA block
         x = self.TSA(x)
 
@@ -241,11 +258,12 @@ class DeepSmileNet(nn.Module):
 
         for l in range(x.size(0)): # Pozbywanie się pustych klatek
             input_x.append(x[l,s[l]:,:,:,:])
+        #Przykładow: MAX S
 
         input_x = torch.cat(input_x,0)
         out = self.FPN(input_x)
 
-        # ConvLTSM block
+        # ConvLSTM + LSTM blocks
         current = 0
         _,new_c,new_w,new_h = out.size()
         reshape_out = torch.zeros((batch_size, timesteps,new_c,new_w,new_h),device = x.device)
@@ -253,11 +271,38 @@ class DeepSmileNet(nn.Module):
         for index,l in enumerate(s):
             reshape_out[index,l:] = out[current:current + timesteps - l]
             current+= timesteps - l
-        x  = reshape_out
+        x = reshape_out
+
+        # https://suzyahyah.github.io/pytorch/2019/07/01/DataLoader-Pad-Pack-Sequence.html po co jest s
+
+        # https://github.com/pytorch/pytorch/issues/43227
+        # RuntimeError: 'lengths' argument should be a 1D CPU int64 tensor, but got 1D cuda:0 Long tensor - naprawione - aus_len z cpu podawane
+
+        # Dodane
+        aus_packed = pack_padded_sequence(aus, aus_len, batch_first=True, enforce_sorted=False)
+        aus_packed, (aus_hn, aus_cn) = self.AUsLSTM(aus_packed)
+        aus, _ = pad_packed_sequence(aus_packed, batch_first=True)
+        #to samo
+        #aus01 = aus[0][aus_len[0]-1]
+        #aus02 = aus_hn[0][0]
+        aus = aus_hn[0]
+
+        si_packed = pack_padded_sequence(si, aus_len, batch_first=True, enforce_sorted=False)
+        si_packed, (si_hn, si_cn) = self.SILSTM(si_packed)
+        si, _ = pad_packed_sequence(si_packed, batch_first=True)
+        si = si_hn[0]
 
         x = self.ConvLSTMLayer(x,s)
 
+
         # Classification block
         x = self.Classification(x)
+        aus = self.ClassificationAUs(aus)
+        si = self.ClassificationSI(si)
+        bsize = x.size(0)
 
-        return x
+        all_features = torch.cat((x, aus, si),dim=1) #dim=1 - dim0 to u nas batch size
+
+        all_features = self.ClassificationCat(all_features)
+
+        return all_features

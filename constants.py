@@ -1,6 +1,8 @@
 dirsdict = {
-    "videos_dir": "videos",
-    "frames_zip_dir": "processed_data/uva",
+    "videos_dir": "data/videos",
+    "frames_zip_dir": "processed_data/uva.zip",
+    "features_zip_dir": "processed_data/features.zip",
+    "vgg_zip_dir": "processed_data/vgg.zip",
     "train_json_dir": "processed_data/train.json",
     "landmarks_dir": "landmarks/shape_predictor_68_face_landmarks.dat",
     "labels_dir": "processed_data/label",

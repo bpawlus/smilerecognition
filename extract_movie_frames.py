@@ -102,7 +102,7 @@ def extract_frames_from_database(
         outfile.write(json_object) #plik wymaga ręcznej separacji na train,test,validate
 
 extract_frames_from_database(
-    input_videos_dir=dirsdict["videos"],
+    input_videos_dir=dirsdict["videos_dir"],
     output_zip_dir=dirsdict["frames_zip_dir"],
     output_json_dir=dirsdict["train_json_dir"],
     input_landmarks_dir=dirsdict["landmarks_dir"],

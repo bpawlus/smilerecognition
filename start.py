@@ -12,8 +12,12 @@ parser.add_argument('--batch_size', default = valuesdict["batch_size"], type=int
                     help='the mini batch size used for training')
 parser.add_argument('--label_path', default = dirsdict["labels_dir"], type=str,
                     help='the path contains training labels')
-parser.add_argument('--frame_path', default = dirsdict["frames_zip_dir"]+".zip", type=str,
-                    help='the path contains processed data')
+parser.add_argument('--frame_path', default = dirsdict["frames_zip_dir"], type=str,
+                    help='the path contains processed video frames data')
+parser.add_argument('--features_path', default = dirsdict["features_zip_dir"], type=str,
+                    help='the path contains processed features data')
+parser.add_argument('--vgg_path', default = dirsdict["vgg_zip_dir"], type=str,
+                    help='the path contains processed vgg data')
 parser.add_argument('--frequency', default = valuesdict["frequency"], type=int,
                     help='the frequency used to sample the data')
 parser.add_argument('--epochs', default=valuesdict["epochs"], type=int,
@@ -26,6 +30,8 @@ parser.add_argument('--verbose', default=dirsdict["verbose_path"], type=str,
                     help='verbose file for models training')
 parser.add_argument('--out_plot', default=dirsdict["evaluation_plot_dir"], type=str,
                     help='learning plot for trained model')
+parser.add_argument('--calcminmax_features', default=False, type=str,
+                    help='calculate min, max and avg for extracted features')
 
 def main():
     args = parser.parse_args()
@@ -42,14 +48,16 @@ def main():
         args.label_path,
         args.frame_path,
         args.frequency,
+        args.features_path,
+        args.vgg_path,
         args.batch_size,
         args.out,
         args.verbose,
-        args.out_plot
+        args.out_plot,
+        args.calcminmax_features
     )
 
     uvanemo.prepareData(str(1))
     uvanemo.train(str(1))
-    uvanemo.evaluate_last()
 
 main()
