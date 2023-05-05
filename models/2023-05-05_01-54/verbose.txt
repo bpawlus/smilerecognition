@@ -1,0 +1,2 @@
+use one gpu
+train size: 1088, validate size: 72, test size: 80

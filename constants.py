@@ -6,9 +6,10 @@ dirsdict = {
     "train_json_dir": "processed_data/train.json",
     "landmarks_dir": "landmarks/shape_predictor_68_face_landmarks.dat",
     "labels_dir": "processed_data/label",
-    "trained_models_dir": "trained_models",
-    "verbose_path": "verbose.txt",
-    "evaluation_plot_dir": "modeltraining.jpeg"
+    "trained_dir": "models",
+    "models_name": "pytorch",
+    "verbose_name": "verbose.txt",
+    "evaluation_name": "training.jpeg"
 }
 
 valuesdict = {

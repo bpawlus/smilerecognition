@@ -4,7 +4,7 @@ File shows how to read binary file with features for uva-nemo datasets
 import struct
 import numpy as np
 
-path = "PATH TO BINARY FILE WITH FEATURES"
+path = "001_deliberate_smile_2"
 
 
 def frame_features_generator(path):

@@ -1,0 +1,60 @@
+use one gpu
+train size: 1088, validate size: 72, test size: 80
+Epoch: 0 | Train Accuracy: 0.6084558963775635 | Train Loss: 47.87373369932175
+Epoch: 0 | Validate Accuracy: 0.7777777910232544 | Validate Loss (NORMALIZED): 83.46288914150662
+Epoch: 1 | Train Accuracy: 0.658088207244873 | Train Loss: 44.890275955200195
+Epoch: 1 | Validate Accuracy: 0.7361111044883728 | Validate Loss (NORMALIZED): 72.85995115174187
+Epoch: 2 | Train Accuracy: 0.6875 | Train Loss: 41.77373552322388
+Epoch: 2 | Validate Accuracy: 0.7361111044883728 | Validate Loss (NORMALIZED): 76.49913893805609
+Epoch: 3 | Train Accuracy: 0.7490808963775635 | Train Loss: 37.895907789468765
+Epoch: 3 | Validate Accuracy: 0.8194444179534912 | Validate Loss (NORMALIZED): 53.456308894687226
+Epoch: 4 | Train Accuracy: 0.7702205777168274 | Train Loss: 34.72398200631142
+Epoch: 4 | Validate Accuracy: 0.8333333134651184 | Validate Loss (NORMALIZED): 50.4200601445304
+Epoch: 5 | Train Accuracy: 0.7573529481887817 | Train Loss: 35.560572028160095
+Epoch: 5 | Validate Accuracy: 0.8611111044883728 | Validate Loss (NORMALIZED): 51.062067952420975
+Epoch: 6 | Train Accuracy: 0.7720588445663452 | Train Loss: 34.40798485279083
+Epoch: 6 | Validate Accuracy: 0.8888888955116272 | Validate Loss (NORMALIZED): 44.348747505082024
+Epoch: 7 | Train Accuracy: 0.7858455777168274 | Train Loss: 33.623395800590515
+Epoch: 7 | Validate Accuracy: 0.8611111044883728 | Validate Loss (NORMALIZED): 51.91619197527567
+Epoch: 8 | Train Accuracy: 0.7665441036224365 | Train Loss: 34.00596758723259
+Epoch: 8 | Validate Accuracy: 0.8611111044883728 | Validate Loss (NORMALIZED): 52.034329268667435
+Epoch: 9 | Train Accuracy: 0.7766544222831726 | Train Loss: 34.106879219412804
+Epoch: 9 | Validate Accuracy: 0.875 | Validate Loss (NORMALIZED): 41.03275720278422
+Epoch: 10 | Train Accuracy: 0.7922794222831726 | Train Loss: 33.41215521097183
+Epoch: 10 | Validate Accuracy: 0.8472222089767456 | Validate Loss (NORMALIZED): 54.57281778918372
+Epoch: 11 | Train Accuracy: 0.7886029481887817 | Train Loss: 32.571254909038544
+Epoch: 11 | Validate Accuracy: 0.9027777910232544 | Validate Loss (NORMALIZED): 41.85918955008189
+Epoch: 12 | Train Accuracy: 0.7959558963775635 | Train Loss: 32.300731122493744
+Epoch: 12 | Validate Accuracy: 0.9027777910232544 | Validate Loss (NORMALIZED): 39.72581581274668
+Epoch: 13 | Train Accuracy: 0.7959558963775635 | Train Loss: 32.2170225828886
+Epoch: 13 | Validate Accuracy: 0.875 | Validate Loss (NORMALIZED): 43.07851901319292
+Epoch: 14 | Train Accuracy: 0.7766544222831726 | Train Loss: 32.35147735476494
+Epoch: 14 | Validate Accuracy: 0.8194444179534912 | Validate Loss (NORMALIZED): 51.68384080462985
+Epoch: 15 | Train Accuracy: 0.8042279481887817 | Train Loss: 32.56412060558796
+Epoch: 15 | Validate Accuracy: 0.9027777910232544 | Validate Loss (NORMALIZED): 41.51674269305335
+Epoch: 16 | Train Accuracy: 0.7867646813392639 | Train Loss: 32.54313811659813
+Epoch: 16 | Validate Accuracy: 0.8611111044883728 | Validate Loss (NORMALIZED): 47.35406197441949
+Epoch: 17 | Train Accuracy: 0.7931985259056091 | Train Loss: 30.91918495297432
+Epoch: 17 | Validate Accuracy: 0.8888888955116272 | Validate Loss (NORMALIZED): 40.880337642298805
+Epoch: 18 | Train Accuracy: 0.8023896813392639 | Train Loss: 31.491267889738083
+Epoch: 18 | Validate Accuracy: 0.8888888955116272 | Validate Loss (NORMALIZED): 38.93510177400377
+Epoch: 19 | Train Accuracy: 0.8014705777168274 | Train Loss: 31.92057865858078
+Epoch: 19 | Validate Accuracy: 0.8194444179534912 | Validate Loss (NORMALIZED): 58.33467515309651
+Epoch: 20 | Train Accuracy: 0.7886029481887817 | Train Loss: 32.79996505379677
+Epoch: 20 | Validate Accuracy: 0.9166666865348816 | Validate Loss (NORMALIZED): 36.65001878473494
+Epoch: 21 | Train Accuracy: 0.7996323704719543 | Train Loss: 31.175364956259727
+Epoch: 21 | Validate Accuracy: 0.9166666865348816 | Validate Loss (NORMALIZED): 32.585145976808334
+Epoch: 22 | Train Accuracy: 0.7959558963775635 | Train Loss: 31.782138854265213
+Epoch: 22 | Validate Accuracy: 0.8472222089767456 | Validate Loss (NORMALIZED): 47.084942062695816
+Epoch: 23 | Train Accuracy: 0.8189338445663452 | Train Loss: 31.12353651225567
+Epoch: 23 | Validate Accuracy: 0.9027777910232544 | Validate Loss (NORMALIZED): 47.18141905466715
+Epoch: 24 | Train Accuracy: 0.8097426295280457 | Train Loss: 30.728532060980797
+Epoch: 24 | Validate Accuracy: 0.9027777910232544 | Validate Loss (NORMALIZED): 41.116043554411995
+Epoch: 25 | Train Accuracy: 0.7996323704719543 | Train Loss: 30.99524164199829
+Epoch: 25 | Validate Accuracy: 0.9027777910232544 | Validate Loss (NORMALIZED): 34.988588054974876
+Epoch: 26 | Train Accuracy: 0.8042279481887817 | Train Loss: 30.47639489173889
+Epoch: 26 | Validate Accuracy: 0.9027777910232544 | Validate Loss (NORMALIZED): 38.49909279081557
+Epoch: 27 | Train Accuracy: 0.8134191036224365 | Train Loss: 30.852138072252274
+Epoch: 27 | Validate Accuracy: 0.8611111044883728 | Validate Loss (NORMALIZED): 47.15275429354774
+Epoch: 28 | Train Accuracy: 0.8226103186607361 | Train Loss: 30.2924947142601
+Epoch: 28 | Validate Accuracy: 0.8888888955116272 | Validate Loss (NORMALIZED): 40.539940536022186

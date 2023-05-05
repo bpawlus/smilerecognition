@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import QApplication, QWidget
 import sys
 
 class UVANEMO():
-    def __init__(self, epochs, lr, label_path, videos_path, videos_frequency, features_path, vgg_path, batch_size, output_model_path, verbose_path, out_plot, calcminmax_features):
+    def __init__(self, epochs, lr, label_path, videos_path, videos_frequency, features_path, vgg_path, batch_size, out_plot, out_verbose, out_model, calcminmax_features, f):
         self.epochs = epochs
         self.lr = lr
         self.label_path = label_path
@@ -17,12 +17,13 @@ class UVANEMO():
         self.features_path = features_path
         self.vgg_path = vgg_path
         self.batch_size = batch_size
-        self.output_model_path = output_model_path
-        self.verbose_path = verbose_path
         self.out_plot = out_plot
+        self.out_verbose = out_verbose
+        self.out_model = out_model
         self.training_generator = None
         self.test_generator = None
         self.calcminmax_features = calcminmax_features
+        self.f = f
 
         self.__init_app()
 
@@ -38,7 +39,7 @@ class UVANEMO():
 
     def outverbose(self, info):
         print(info)
-        with open(f"{self.verbose_path}", "a") as f:
+        with open(f"{self.out_verbose}", "a") as f:
             f.write(info + "\n")
 
     def prepareData(self, idx):
@@ -90,7 +91,7 @@ class UVANEMO():
         self.test_generator = torch.utils.data.DataLoader(dg,batch_size=8,shuffle=True)
         # ===== =====
 
-        self.architecture = DeepSmileNet()
+        self.architecture = DeepSmileNet(self.f)
 
     def train(self, idx, weights=None):
         con = []
@@ -204,7 +205,7 @@ class UVANEMO():
             pred_label = []
             true_label = []
 
-            for x, y, s, aus, si, aus_len in self.training_generator:
+            for x, y, s, aus, si, aus_len in self.validate_generator:
                 index = s.min().item()
                 s = s - s.min()
                 x = x.type(torch.FloatTensor)[:, index:]
@@ -251,7 +252,7 @@ class UVANEMO():
 
             # ===== UPDATE MODEL =====
 
-            filepath = f"{self.output_model_path}/{idx}-{epoch:}-{loss}-{validate_accuracy}.pt"
+            filepath = f"{self.out_model}/{idx}-{epoch:}-{loss}-{validate_accuracy}.pt"
             torch.save(self.architecture.state_dict(), filepath)
 
             if validate_accuracy > best_accuracy:
@@ -273,6 +274,8 @@ class UVANEMO():
         self.outverbose(f"Best Accuracy for {idx} is {best_v[1]} in epoch {best_v[0]}" + "\n")
 
     def evaluate_last(self):
+        if os.path.exists(self.out_plot):
+            os.remove(self.out_plot)
         fig, ax = plt.subplots()
         ax.set_xlabel("Epoch")
 

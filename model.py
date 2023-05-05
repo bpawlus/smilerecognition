@@ -190,119 +190,114 @@ class TemporalAttension(nn.Module):
 
 
 class DeepSmileNet(nn.Module):
-    def __init__(self):
+    def __init__(self, f):
         super(DeepSmileNet,self).__init__()
+        concat_size_on_last = 0
+        self.f = f
 
-        self.TSA = TemporalAttension(3)
-        self.FPN = self._make_layers([4,'M', 6, 'M'])
-        self.ConvLSTMLayer = ConvLSTM(6,8)
-        self.Classification = nn.Sequential(
-            NONLocalBlock2D(8),
-            nn.AvgPool2d(kernel_size = 2, stride = 2),
-            Convbn(8,10,2),
-            nn.Dropout(0.5),
-            nn.Flatten(),  # 250
-        )
+        if "videos" in f:
+            self.TSA = TemporalAttension(3)
+            self.FPN = self._fpn_layers([4,'M', 6, 'M'])
+            self.ConvLSTMLayer = ConvLSTM(6,8)
+            self.Classification = nn.Sequential(
+                NONLocalBlock2D(8),
+                nn.AvgPool2d(kernel_size = 2, stride = 2),
+                Convbn(8,10,2),
+                nn.Dropout(0.5),
+                nn.Flatten()  # 250
+            )
+            concat_size_on_last += 250
 
         #Dodane
-        self.AUsLSTM = nn.LSTM(input_size=17, hidden_size=200, num_layers=1, batch_first=True)
-        self.ClassificationAUs = nn.Sequential(
-            nn.BatchNorm1d(200)
-        )
+        if "aus" in f:
+            self.AUsLSTM = nn.LSTM(input_size=17, hidden_size=150, num_layers=1, batch_first=True)
+            self.ClassificationAUs = nn.Sequential(
+                nn.BatchNorm1d(150)
+            )
+            concat_size_on_last += 150
 
-        self.SILSTM = nn.LSTM(input_size=1, hidden_size=10, num_layers=1, batch_first=True)
-        self.ClassificationSI = nn.Sequential(
-            nn.BatchNorm1d(10)
-        )
+        if "si" in f:
+            self.SILSTM = nn.LSTM(input_size=1, hidden_size=10, num_layers=1, batch_first=True)
+            self.ClassificationSI = nn.Sequential(
+                nn.BatchNorm1d(10)
+            )
+            concat_size_on_last += 10
 
         self.ClassificationCat = nn.Sequential(
-            nn.Linear(460, 1), # nn.Linear(460, 1) #250 (Classification) + 200 + 10
+            nn.Linear(concat_size_on_last, 1),
             nn.Sigmoid()
         )
 
 
-    def _make_layers(self,cfg,in_channels = 3):
+    def _fpn_layers(self,cfg,in_channels = 3):
         layers = [nn.BatchNorm2d(in_channels)]
         for x in cfg:
             if x == 'M':
                 layers += [nn.AvgPool2d(kernel_size=2, stride=2)]
             else:
-                layers += [Convbn(in_channels, x, kernel = 3, padding=1)]
+                layers += [Convbn(in_channels, x, kernel=3, padding=1)]
                 in_channels = x
         layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
         layers += [nn.Dropout2d(0.2)]
         return nn.Sequential(*layers)
 
-    def _make_layers_org(self):
-        layers = []
-
-        layers += [Convbn(3, 4, kernel = 3, padding=1)]
-        layers += [nn.BatchNorm2d(4)]
-        layers += [nn.ReLU()]
-        layers += [nn.AvgPool2d(kernel_size=2, stride=2)]
-
-        layers += [Convbn(4, 8, kernel = 3, padding=1)]
-        layers += [nn.BatchNorm2d(8)]
-        layers += [nn.ReLU()]
-        layers += [nn.AvgPool2d(kernel_size=2, stride=2)]
-
-        return nn.Sequential(*layers)
-
     def forward(self,x,s,aus,si,aus_len):
         # TSA block
-        x = self.TSA(x)
+        tocat = []
 
-        # FPN block
-        batch_size, timesteps, C, H, W = x.size()
-        input_x = []
+        if "videos" in self.f:
+            x = self.TSA(x)
 
-        for l in range(x.size(0)): # Pozbywanie się pustych klatek
-            input_x.append(x[l,s[l]:,:,:,:])
-        #Przykładow: MAX S
+            # FPN block
+            batch_size, timesteps, C, H, W = x.size()
+            input_x = []
 
-        input_x = torch.cat(input_x,0)
-        out = self.FPN(input_x)
+            for l in range(x.size(0)): # Pozbywanie się pustych klatek
+                input_x.append(x[l,s[l]:,:,:,:])
+            #Przykładow: MAX S
+            input_x = torch.cat(input_x,0)
+            out = self.FPN(input_x)
 
-        # ConvLSTM + LSTM blocks
-        current = 0
-        _,new_c,new_w,new_h = out.size()
-        reshape_out = torch.zeros((batch_size, timesteps,new_c,new_w,new_h),device = x.device)
+            # ConvLSTM + LSTM blocks
+            current = 0
+            _,new_c,new_w,new_h = out.size()
+            reshape_out = torch.zeros((batch_size, timesteps,new_c,new_w,new_h),device = x.device)
 
-        for index,l in enumerate(s):
-            reshape_out[index,l:] = out[current:current + timesteps - l]
-            current+= timesteps - l
-        x = reshape_out
+            for index,l in enumerate(s):
+                reshape_out[index,l:] = out[current:current + timesteps - l]
+                current+= timesteps - l
+            x = reshape_out
 
-        # https://suzyahyah.github.io/pytorch/2019/07/01/DataLoader-Pad-Pack-Sequence.html po co jest s
+            x = self.ConvLSTMLayer(x, s)
+            x = self.Classification(x)
+            tocat.append(x)
 
-        # https://github.com/pytorch/pytorch/issues/43227
-        # RuntimeError: 'lengths' argument should be a 1D CPU int64 tensor, but got 1D cuda:0 Long tensor - naprawione - aus_len z cpu podawane
+        if "aus" in self.f:
+            # https://suzyahyah.github.io/pytorch/2019/07/01/DataLoader-Pad-Pack-Sequence.html po co jest s
 
-        # Dodane
-        aus_packed = pack_padded_sequence(aus, aus_len, batch_first=True, enforce_sorted=False)
-        aus_packed, (aus_hn, aus_cn) = self.AUsLSTM(aus_packed)
-        aus, _ = pad_packed_sequence(aus_packed, batch_first=True)
-        #to samo
-        #aus01 = aus[0][aus_len[0]-1]
-        #aus02 = aus_hn[0][0]
-        aus = aus_hn[0]
+            # https://github.com/pytorch/pytorch/issues/43227
+            # RuntimeError: 'lengths' argument should be a 1D CPU int64 tensor, but got 1D cuda:0 Long tensor - naprawione - aus_len z cpu podawane
+            aus_packed = pack_padded_sequence(aus, aus_len, batch_first=True, enforce_sorted=False)
+            aus_packed, (aus_hn, aus_cn) = self.AUsLSTM(aus_packed)
+            aus, _ = pad_packed_sequence(aus_packed, batch_first=True)
 
-        si_packed = pack_padded_sequence(si, aus_len, batch_first=True, enforce_sorted=False)
-        si_packed, (si_hn, si_cn) = self.SILSTM(si_packed)
-        si, _ = pad_packed_sequence(si_packed, batch_first=True)
-        si = si_hn[0]
+            #to samo
+            #aus01 = aus[0][aus_len[0]-1]
+            #aus02 = aus_hn[0][0]
+            aus = aus_hn[0]
+            aus = self.ClassificationAUs(aus)
+            tocat.append(aus)
 
-        x = self.ConvLSTMLayer(x,s)
+        if "si" in self.f:
+            si_packed = pack_padded_sequence(si, aus_len, batch_first=True, enforce_sorted=False)
+            si_packed, (si_hn, si_cn) = self.SILSTM(si_packed)
+            si, _ = pad_packed_sequence(si_packed, batch_first=True)
 
+            si = si_hn[0]
+            si = self.ClassificationSI(si)
+            tocat.append(si)
 
-        # Classification block
-        x = self.Classification(x)
-        aus = self.ClassificationAUs(aus)
-        si = self.ClassificationSI(si)
-        bsize = x.size(0)
-
-        all_features = torch.cat((x, aus, si),dim=1) #dim=1 - dim0 to u nas batch size
+        all_features = torch.cat(tocat,dim=1) #dim=1 - dim0 to u nas batch size
 
         all_features = self.ClassificationCat(all_features)
-
         return all_features

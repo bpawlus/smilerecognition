@@ -44,7 +44,8 @@ def load_frames(videos_data_names, videos_data, name, videos_frequency, video_ma
         frame_count+=1
 
     x = np.array(values)
-    pad_x[0:frame_count] = x
+    frame_count = video_max_len - frame_count
+    pad_x[frame_count:] = x
 
     return pad_x, frame_count
 
