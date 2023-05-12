@@ -1,3 +1,4 @@
+import numpy
 import torch
 import os
 import json
@@ -61,7 +62,7 @@ def load_features_si(features_data_names, features_data, name, videos_frequency,
     frame_count = len(values[0])
 
     x = np.array(values).transpose()
-    x = 1/(1+np.exp(-(x*100))) # Translacja elementów (natężenia action unitów) - zawierają wysokie wartości ujemne i wysokie dodatnie - do tensorów warto zastosować moim zdaniem sigmoid
+    x = 1/(1+np.exp(-(x*100))) # Translacja elementów (natężenia uśmiechu) - zawierają niskie wartości ujemne i niskie dodatnie - do tensorów warto zastosować moim zdaniem sigmoid
     #  *20 - min max z smile_intensities
     pad_x[0:frame_count] = x
 
@@ -86,12 +87,23 @@ def load_features_aus(features_data_names, features_data, name, videos_frequency
 
     return pad_x, frame_count
 
-def load_features(features_data_names, features_data, name, videos_frequency, video_max_len, video_len):
-    aus_tensors, aus_len = load_features_aus(features_data_names, features_data, name, videos_frequency, video_max_len, video_len)
-    si_tensors, si_len = load_features_si(features_data_names, features_data, name, videos_frequency, video_max_len, video_len)
+def load_features_dynamics(features_data_names, features_data, name, dynamics_subfeature_name, dynamics_subfeature_mul, videos_frequency, video_max_len, video_len):
+    files = features_data_names[name]
+    pd = read_au_txt(features_data, files[dynamics_subfeature_name])
+    columns = sorted(pd.columns.values.tolist())
 
-    return aus_tensors, si_tensors, aus_len
+    pad_x = np.zeros((video_max_len, len(columns)))
 
+    last = [files[-1]] if len(files) % videos_frequency >= 2 / 3 * videos_frequency else []
+    start = 0
+    values = [np.concatenate([pd[i].values[start::videos_frequency], last]) for i in columns]
+    frame_count = len(values[0])
+
+    x = np.array(values).transpose()
+    x = 1/(1 + np.exp(-(x * dynamics_subfeature_mul))) # Translacja elementów (dynamiki natężenia action unitów) - zawierają niskie wartości ujemne i wysokie dodatnie - do tensorów warto zastosować moim zdaniem sigmoid
+    pad_x[0:frame_count] = x
+
+    return pad_x, frame_count
 
 def videos_zip_to_dict(data):
     data_name = dict()
@@ -173,13 +185,14 @@ def features_zip_to_dict(data, calcminmax_features):
     return data_name, minmax_name
 
 class UVANEMODataGenerator(torch.utils.data.Dataset):
-    def __init__(self, label_path, videos_path, videos_frequency, features_path, vgg_path, test = False, calcminmax_features = False):
+    def __init__(self, label_path, videos_path, videos_frequency, features_path, vgg_path, feature_list, test = False, calcminmax_features = False):
         self.label_path = label_path
         self.test = test
         self.calcminmax_features = calcminmax_features
+        self.feature_list = feature_list
+        self.videos_frequency = videos_frequency
 
         self.videos_path = videos_path
-        self.videos_frequency = videos_frequency
         self.__init_video_data()
 
         self.features_path = features_path
@@ -200,7 +213,7 @@ class UVANEMODataGenerator(torch.utils.data.Dataset):
 
     def __init_features_data(self):
         self.features_data = zipfile.ZipFile(self.features_path)
-        self.features_data_names, _ = features_zip_to_dict(self.features_data, self.calcminmax_features) # TODO: Wyświetlanieminmax (temp _)
+        self.features_data_names, _ = features_zip_to_dict(self.features_data, self.calcminmax_features)
 
         return
 
@@ -230,8 +243,21 @@ class UVANEMODataGenerator(torch.utils.data.Dataset):
         y[0] = label
 
         # Frames
-        frames_tensors, video_len = load_frames(self.videos_data_names, self.videos_data, name, self.videos_frequency, self.video_max_len)
+        frames_tensors_scaled = numpy.empty(1)
+        video_len = 0
+        if "videos" in self.feature_list:
+            frames_tensors, video_len = load_frames(self.videos_data_names, self.videos_data, name, self.videos_frequency, self.video_max_len)
+            frames_tensors_scaled = frames_tensors / self.frame_scale
 
-        aus_tensors, si_tensors, aus_len = load_features(self.features_data_names, self.features_data, name, self.videos_frequency, self.video_max_len, video_len)
+        aus_tensors = numpy.empty(1)
+        si_tensors = numpy.empty(1)
+        d2da27_tensors = numpy.empty(1)
+        d1da27_tensors = numpy.empty(1)
+        frames_len = 0
+        if any((True for x in ["aus", "si", "d1da27", "d2da27"] if x in self.feature_list)):
+            aus_tensors, frames_len = load_features_aus(self.features_data_names, self.features_data, name, self.videos_frequency, self.video_max_len, video_len)
+            si_tensors, _ = load_features_si(self.features_data_names, self.features_data, name, self.videos_frequency, self.video_max_len, video_len)
+            d2da27_tensors, _ = load_features_dynamics(self.features_data_names, self.features_data, name, "dynamics_2nd_delta_adjusted_27", 150, self.videos_frequency, self.video_max_len, video_len)
+            d1da27_tensors, _ = load_features_dynamics(self.features_data_names, self.features_data, name, "dynamics_delta_adjusted_27", 100, self.videos_frequency, self.video_max_len, video_len)
 
-        return frames_tensors/self.frame_scale, y, video_len, aus_tensors, si_tensors, aus_len
+        return frames_tensors_scaled, y, video_len, aus_tensors, si_tensors, d1da27_tensors, d2da27_tensors, frames_len

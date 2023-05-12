@@ -32,3 +32,28 @@
 # a1 = a[1:]
 # a2 = a[:-1,]
 # a2-a1
+
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.model_selection import KFold
+import random
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import Dataset, DataLoader,TensorDataset,random_split,SubsetRandomSampler, ConcatDataset
+from torch.nn import functional as F
+import torchvision
+from torchvision import datasets,transforms
+import torchvision.transforms as transforms
+
+
+train_dataset = torchvision.datasets.MNIST('classifier_data', train=True, download=True)
+test_dataset = torchvision.datasets.MNIST('classifier_data', train=False, download=True)
+
+transform = torchvision.transforms.Compose([
+    torchvision.transforms.ToTensor()
+])
+
+train_dataset.transform=transform
+test_dataset.transform=transform

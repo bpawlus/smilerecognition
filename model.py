@@ -212,14 +212,32 @@ class DeepSmileNet(nn.Module):
         if "aus" in f:
             self.AUsLSTM = nn.LSTM(input_size=17, hidden_size=150, num_layers=1, batch_first=True)
             self.ClassificationAUs = nn.Sequential(
-                nn.BatchNorm1d(150)
+                nn.BatchNorm1d(150),
+                nn.ReLU(inplace=True)
+            )
+            concat_size_on_last += 150
+
+        if "d1da27" in f:
+            self.Fd1da27LSTM = nn.LSTM(input_size=17, hidden_size=150, num_layers=1, batch_first=True)
+            self.ClassificationFd1da27 = nn.Sequential(
+                nn.BatchNorm1d(150),
+                nn.ReLU(inplace=True)
+            )
+            concat_size_on_last += 150
+
+        if "d2da27" in f:
+            self.Fd2da27LSTM = nn.LSTM(input_size=17, hidden_size=150, num_layers=1, batch_first=True)
+            self.ClassificationFd2da27 = nn.Sequential(
+                nn.BatchNorm1d(150),
+                nn.ReLU(inplace=True)
             )
             concat_size_on_last += 150
 
         if "si" in f:
             self.SILSTM = nn.LSTM(input_size=1, hidden_size=10, num_layers=1, batch_first=True)
             self.ClassificationSI = nn.Sequential(
-                nn.BatchNorm1d(10)
+                nn.BatchNorm1d(10),
+                nn.ReLU(inplace=True)
             )
             concat_size_on_last += 10
 
@@ -241,7 +259,22 @@ class DeepSmileNet(nn.Module):
         layers += [nn.Dropout2d(0.2)]
         return nn.Sequential(*layers)
 
-    def forward(self,x,s,aus,si,aus_len):
+    def __forward_au_features(self, aus, aus_len, lstm_layer, cls_layer):
+        # https://suzyahyah.github.io/pytorch/2019/07/01/DataLoader-Pad-Pack-Sequence.html
+        # https://github.com/pytorch/pytorch/issues/43227
+        # RuntimeError: 'lengths' argument should be a 1D CPU int64 tensor, but got 1D cuda:0 Long tensor - naprawione - aus_len z cpu podawane
+        aus_packed = pack_padded_sequence(aus, aus_len, batch_first=True, enforce_sorted=False)
+        aus_packed, (aus_hn, aus_cn) = lstm_layer(aus_packed)
+        aus, _ = pad_packed_sequence(aus_packed, batch_first=True)
+
+        # to samo
+        # aus01 = aus[0][aus_len[0]-1]
+        # aus02 = aus_hn[0][0]
+        aus = aus_hn[0]
+        aus = cls_layer(aus)
+        return aus
+
+    def forward(self,x, s, aus, si, d1da27, d2da27, frames_len):
         # TSA block
         tocat = []
 
@@ -273,28 +306,19 @@ class DeepSmileNet(nn.Module):
             tocat.append(x)
 
         if "aus" in self.f:
-            # https://suzyahyah.github.io/pytorch/2019/07/01/DataLoader-Pad-Pack-Sequence.html po co jest s
+            aus = self.__forward_au_features(aus, frames_len, self.AUsLSTM, self.ClassificationAUs)
+            tocat.append(aus)
 
-            # https://github.com/pytorch/pytorch/issues/43227
-            # RuntimeError: 'lengths' argument should be a 1D CPU int64 tensor, but got 1D cuda:0 Long tensor - naprawione - aus_len z cpu podawane
-            aus_packed = pack_padded_sequence(aus, aus_len, batch_first=True, enforce_sorted=False)
-            aus_packed, (aus_hn, aus_cn) = self.AUsLSTM(aus_packed)
-            aus, _ = pad_packed_sequence(aus_packed, batch_first=True)
+        if "d1da27" in self.f:
+            aus = self.__forward_au_features(d1da27, frames_len, self.Fd1da27LSTM, self.ClassificationFd1da27)
+            tocat.append(aus)
 
-            #to samo
-            #aus01 = aus[0][aus_len[0]-1]
-            #aus02 = aus_hn[0][0]
-            aus = aus_hn[0]
-            aus = self.ClassificationAUs(aus)
+        if "d2da27" in self.f:
+            aus = self.__forward_au_features(d2da27, frames_len, self.Fd2da27LSTM, self.ClassificationFd2da27)
             tocat.append(aus)
 
         if "si" in self.f:
-            si_packed = pack_padded_sequence(si, aus_len, batch_first=True, enforce_sorted=False)
-            si_packed, (si_hn, si_cn) = self.SILSTM(si_packed)
-            si, _ = pad_packed_sequence(si_packed, batch_first=True)
-
-            si = si_hn[0]
-            si = self.ClassificationSI(si)
+            si = self.__forward_au_features(si, frames_len, self.SILSTM, self.ClassificationSI)
             tocat.append(si)
 
         all_features = torch.cat(tocat,dim=1) #dim=1 - dim0 to u nas batch size

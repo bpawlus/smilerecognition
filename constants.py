@@ -15,6 +15,6 @@ dirsdict = {
 valuesdict = {
     "batch_size": 16,
     "frequency": 5,
-    "epochs": 60,
+    "epochs": 7,
     "learning_rate": 1e-3
 }
