@@ -249,15 +249,24 @@ class UVANEMODataGenerator(torch.utils.data.Dataset):
             frames_tensors, video_len = load_frames(self.videos_data_names, self.videos_data, name, self.videos_frequency, self.video_max_len)
             frames_tensors_scaled = frames_tensors / self.frame_scale
 
-        aus_tensors = numpy.empty(1)
-        si_tensors = numpy.empty(1)
-        d2da27_tensors = numpy.empty(1)
-        d1da27_tensors = numpy.empty(1)
+        # Dynamic Features
+        dynamics_tensors = dict()
+        for key in self.features_data_names[list(self.features_data_names)[0]]:
+            dynamics_tensors.update({key: numpy.empty(1)})
         frames_len = 0
-        if any((True for x in ["aus", "si", "d1da27", "d2da27"] if x in self.feature_list)):
-            aus_tensors, frames_len = load_features_aus(self.features_data_names, self.features_data, name, self.videos_frequency, self.video_max_len, video_len)
-            si_tensors, _ = load_features_si(self.features_data_names, self.features_data, name, self.videos_frequency, self.video_max_len, video_len)
-            d2da27_tensors, _ = load_features_dynamics(self.features_data_names, self.features_data, name, "dynamics_2nd_delta_adjusted_27", 150, self.videos_frequency, self.video_max_len, video_len)
-            d1da27_tensors, _ = load_features_dynamics(self.features_data_names, self.features_data, name, "dynamics_delta_adjusted_27", 100, self.videos_frequency, self.video_max_len, video_len)
 
-        return frames_tensors_scaled, y, video_len, aus_tensors, si_tensors, d1da27_tensors, d2da27_tensors, frames_len
+        if "aus" in self.feature_list:
+            tensors, frames_len = load_features_aus(self.features_data_names, self.features_data, name, self.videos_frequency, self.video_max_len, video_len)
+            dynamics_tensors.update({"action_units": tensors})
+        if "si" in self.feature_list:
+            tensors, frames_len = load_features_si(self.features_data_names, self.features_data, name, self.videos_frequency, self.video_max_len, video_len)
+            dynamics_tensors.update({"smile_intensities": tensors})
+        if "d1da27" in self.feature_list:
+            key = "dynamics_delta_adjusted_27"
+            tensors, frames_len = load_features_dynamics(self.features_data_names, self.features_data, name, key, 150, self.videos_frequency, self.video_max_len, video_len)
+            dynamics_tensors.update({key: tensors})
+        if "d2da27" in self.feature_list:
+            key = "dynamics_2nd_delta_adjusted_27"
+            tensors, frames_len = load_features_dynamics(self.features_data_names, self.features_data, name, key, 100, self.videos_frequency, self.video_max_len, video_len)
+            dynamics_tensors.update({key: tensors})
+        return frames_tensors_scaled, y, video_len, dynamics_tensors, frames_len

@@ -274,7 +274,7 @@ class DeepSmileNet(nn.Module):
         aus = cls_layer(aus)
         return aus
 
-    def forward(self,x, s, aus, si, d1da27, d2da27, frames_len):
+    def forward(self,x, s, dynamics_features, frames_len):
         # TSA block
         tocat = []
 
@@ -306,19 +306,19 @@ class DeepSmileNet(nn.Module):
             tocat.append(x)
 
         if "aus" in self.f:
-            aus = self.__forward_au_features(aus, frames_len, self.AUsLSTM, self.ClassificationAUs)
+            aus = self.__forward_au_features(dynamics_features['action_units'], frames_len, self.AUsLSTM, self.ClassificationAUs)
             tocat.append(aus)
 
         if "d1da27" in self.f:
-            aus = self.__forward_au_features(d1da27, frames_len, self.Fd1da27LSTM, self.ClassificationFd1da27)
+            aus = self.__forward_au_features(dynamics_features['dynamics_delta_adjusted_27'], frames_len, self.Fd1da27LSTM, self.ClassificationFd1da27)
             tocat.append(aus)
 
         if "d2da27" in self.f:
-            aus = self.__forward_au_features(d2da27, frames_len, self.Fd2da27LSTM, self.ClassificationFd2da27)
+            aus = self.__forward_au_features(dynamics_features['dynamics_2nd_delta_adjusted_27'], frames_len, self.Fd2da27LSTM, self.ClassificationFd2da27)
             tocat.append(aus)
 
         if "si" in self.f:
-            si = self.__forward_au_features(si, frames_len, self.SILSTM, self.ClassificationSI)
+            si = self.__forward_au_features(dynamics_features['smile_intensities'], frames_len, self.SILSTM, self.ClassificationSI)
             tocat.append(si)
 
         all_features = torch.cat(tocat,dim=1) #dim=1 - dim0 to u nas batch size
