@@ -7,14 +7,13 @@ dirsdict = {
     "landmarks_dir": "landmarks/shape_predictor_68_face_landmarks.dat",
     "labels_dir": "processed_data/label",
     "folds_dir": "processed_data/folds",
-    "trained_dir": "models",
-    "models_name": "pytorch",
-    "verbose_name": "verbose.txt",
-    "evaluation_name": "training"
+    "folds_orig_dir": "processed_data/folds_original",
+    "trained_dir": "models"
 }
 
 valuesdict = {
-    "batch_size": 16,
+    "batch_size_train": 32,
+    "batch_size_valtest": 16,
     "frequency": 5,
     "epochs": 70,
     "learning_rate": 1e-3

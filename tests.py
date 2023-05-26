@@ -47,13 +47,34 @@ import torchvision
 from torchvision import datasets,transforms
 import torchvision.transforms as transforms
 
+"""
+import numpy
+import pandas as pd
+a = numpy.asarray([[1,2,3,4,5,6,7,8,9], [1.04,2.02,3.12,4.42,5.13,6.14,7.15,8.16,9.16], [1.04,2.02,3.12,4.42,5.13,6.14,7.15,8.16,9.16], [1.04,2.02,3.12,4.42,5.13,6.14,7.15,8.16,9.16]])
+df = pd.DataFrame(a).transpose()
+df.columns = ["e","d1","d2","d3"]
+print(df)
+df.to_csv("tests/foo.csv", index=False, sep=" ")
+"""
 
-train_dataset = torchvision.datasets.MNIST('classifier_data', train=True, download=True)
-test_dataset = torchvision.datasets.MNIST('classifier_data', train=False, download=True)
+"""
+import numpy
+import pandas as pd
+res = {"a":[1,1,1,0,1],"b":[0,0,1,1,0]}
+rest ={"a":[1],"b":[0]}
 
-transform = torchvision.transforms.Compose([
-    torchvision.transforms.ToTensor()
-])
+df = pd.DataFrame.from_dict(res).transpose()
+df.columns = [f"E{int(name)+1}" for name in list(df.columns.values)]
+df2 = pd.DataFrame.from_dict(rest).transpose()
+df2.columns = ["true"]
 
-train_dataset.transform=transform
-test_dataset.transform=transform
+df = df2.join(df)
+print(df)
+"""
+
+input = torch.randn(5)
+m = nn.BatchNorm1d(5)
+r = nn.ReLU(inplace=False)
+output = m(input)
+output2 = r(output)
+print(input)

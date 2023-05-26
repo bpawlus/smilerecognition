@@ -269,4 +269,4 @@ class UVANEMODataGenerator(torch.utils.data.Dataset):
             key = "dynamics_2nd_delta_adjusted_27"
             tensors, frames_len = load_features_dynamics(self.features_data_names, self.features_data, name, key, 100, self.videos_frequency, self.video_max_len, video_len)
             dynamics_tensors.update({key: tensors})
-        return frames_tensors_scaled, y, video_len, dynamics_tensors, frames_len
+        return idx, name, frames_tensors_scaled, y, video_len, dynamics_tensors, frames_len

@@ -8,13 +8,17 @@ from constants import valuesdict
 
 parser = argparse.ArgumentParser(description='RealSmileNet training')
 
-parser.add_argument('--batch_size', default = valuesdict["batch_size"], type=int,
+parser.add_argument('--batch_size_train', default = valuesdict["batch_size_train"], type=int,
                     help='the mini batch size used for training')
+parser.add_argument('--batch_size_valtest', default = valuesdict["batch_size_valtest"], type=int,
+                    help='the mini batch size used for validation and testing')
 
-parser.add_argument('--split_first', default='True', choices=('True','False'),
+parser.add_argument('--split_first', default='True', choices=('Orig','True','False'),
                     help='should k-fold cross validation be performed first')
 parser.add_argument('--folds_path', default = dirsdict["folds_dir"], type=str,
                     help='the path contains k-fold cross validation groups')
+parser.add_argument('--folds_orig_path', default = dirsdict["folds_orig_dir"], type=str,
+                    help='the path contains original realsmilenet folds')
 
 parser.add_argument('--label_path', default = dirsdict["labels_dir"], type=str,
                     help='the path contains training labels')
@@ -37,21 +41,15 @@ parser.add_argument('--lr', '--learning-rate', default=valuesdict["learning_rate
 parser.add_argument('--models_dir', default=dirsdict["trained_dir"], type=str,
                     help='directory for all trained models')
 
-parser.add_argument('--out_model', default=dirsdict["models_name"], type=str,
-                    help='subdirectory name for trained models')
-parser.add_argument('--out_verbose', default=dirsdict["verbose_name"], type=str,
-                    help='verbose file name for models training')
-parser.add_argument('--out_plot', default=dirsdict["evaluation_name"], type=str,
-                    help='learning plot image name for trained model')
 parser.add_argument('--calcminmax_features', default=False, type=str,
                     help='calculate min, max and avg for extracted features')
 
 
 
 def main():
-    #fs = [["aus"], ["si"], ["d1da27"], ["d2da27"]]
+    fs = [["aus"], ["videos"], ["si"], ["d1da27"], ["d2da27"], ['videos', 'aus', 'si', 'd1da27']]
 
-    #for f in fs:
+    for f in fs:
         args = parser.parse_args()
 
         date = datetime.datetime.now()
@@ -63,30 +61,32 @@ def main():
         except FileNotFoundError:
             os.makedirs(args.models_dir)
 
-        f = ["".join(feature) for feature in args.f]
+        #f = ["".join(feature) for feature in args.f]
         uvanemo = net.UVANEMO(
             args.epochs,
             args.lr,
             args.label_path,
             args.folds_path,
+            args.folds_orig_path,
             args.frame_path,
             args.frequency,
             args.features_path,
             args.vgg_path,
-            args.batch_size,
+            args.batch_size_train,
+            args.batch_size_valtest,
             args.models_dir,
-            args.out_plot,
-            args.out_verbose,
-            args.out_model,
             args.calcminmax_features,
             f
         )
 
-        k = 10
+        k = 9
         if args.split_first == 'True':
+            k = 10
             uvanemo.split(k)
+        elif args.split_first == "Orig":
+            k = 9
+            uvanemo.split_orig(10)
 
-        k = 3 #temp
         for i in range(k):
             uvanemo.prepareData(str(i+1))
             uvanemo.train(str(i+1))
