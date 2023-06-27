@@ -208,38 +208,202 @@ class DeepSmileNet(nn.Module):
             )
             concat_size_on_last += 250
 
-        #Dodane
         if "aus" in f:
-            self.AUsLSTM = nn.LSTM(input_size=17, hidden_size=150, num_layers=1, batch_first=True)
+            n = 150
+            self.AUsLSTM = nn.LSTM(input_size=17, hidden_size=n, num_layers=1, batch_first=True)
             self.ClassificationAUs = nn.Sequential(
-                nn.BatchNorm1d(150),
+                nn.BatchNorm1d(n),
                 nn.ReLU(inplace=True)
             )
-            concat_size_on_last += 150
+            concat_size_on_last += n
+
+        self.Ddict = {}
 
         if "d1da27" in f:
-            self.Fd1da27LSTM = nn.LSTM(input_size=17, hidden_size=150, num_layers=1, batch_first=True)
+            n = 150
+            self.Fd1da27LSTM = nn.LSTM(input_size=17, hidden_size=n, num_layers=1, batch_first=True)
             self.ClassificationFd1da27 = nn.Sequential(
-                nn.BatchNorm1d(150),
+                nn.BatchNorm1d(n),
                 nn.ReLU(inplace=True)
             )
-            concat_size_on_last += 150
+            self.Ddict.update({"d1da27": ("dynamics_delta_adjusted_27", self.Fd1da27LSTM, self.ClassificationFd1da27)})
+            concat_size_on_last += n
 
         if "d2da27" in f:
-            self.Fd2da27LSTM = nn.LSTM(input_size=17, hidden_size=150, num_layers=1, batch_first=True)
+            n = 150
+            self.Fd2da27LSTM = nn.LSTM(input_size=17, hidden_size=n, num_layers=1, batch_first=True)
             self.ClassificationFd2da27 = nn.Sequential(
-                nn.BatchNorm1d(150),
+                nn.BatchNorm1d(n),
                 nn.ReLU(inplace=True)
             )
-            concat_size_on_last += 150
+            self.Ddict.update({"d2da27": ("dynamics_2nd_delta_adjusted_27", self.Fd2da27LSTM, self.ClassificationFd2da27)})
+            concat_size_on_last += n
+
+        if "d1da9" in f:
+            n = 150
+            self.Fd1da9LSTM = nn.LSTM(input_size=17, hidden_size=n, num_layers=1, batch_first=True)
+            self.ClassificationFd1da9 = nn.Sequential(
+                nn.BatchNorm1d(n),
+                nn.ReLU(inplace=True)
+            )
+            self.Ddict.update({"d1da9": ("dynamics_delta_adjusted_9", self.Fd1da9LSTM, self.ClassificationFd1da9)})
+            concat_size_on_last += n
+
+        if "d2da9" in f:
+            n = 150
+            self.Fd2da9LSTM = nn.LSTM(input_size=17, hidden_size=n, num_layers=1, batch_first=True)
+            self.ClassificationFd2da9 = nn.Sequential(
+                nn.BatchNorm1d(n),
+                nn.ReLU(inplace=True)
+            )
+            self.Ddict.update({"d2da9": ("dynamics_2nd_delta_adjusted_9", self.Fd2da9LSTM, self.ClassificationFd2da9)})
+            concat_size_on_last += n
+
+        if "d1d27" in f:
+            n = 150
+            self.Fd1d27LSTM = nn.LSTM(input_size=17, hidden_size=n, num_layers=1, batch_first=True)
+            self.ClassificationFd1d27 = nn.Sequential(
+                nn.BatchNorm1d(n),
+                nn.ReLU(inplace=True)
+            )
+            self.Ddict.update({"d1d27": ("dynamics_delta_27", self.Fd1d27LSTM, self.ClassificationFd1d27)})
+            concat_size_on_last += n
+
+        if "d2d27" in f:
+            n = 150
+            self.Fd2d27LSTM = nn.LSTM(input_size=17, hidden_size=n, num_layers=1, batch_first=True)
+            self.ClassificationFd2d27 = nn.Sequential(
+                nn.BatchNorm1d(n),
+                nn.ReLU(inplace=True)
+            )
+            self.Ddict.update({"d2d27": ("dynamics_2nd_delta_27", self.Fd2d27LSTM, self.ClassificationFd2d27)})
+            concat_size_on_last += n
+
+        if "d1d9" in f:
+            n = 150
+            self.Fd1d9LSTM = nn.LSTM(input_size=17, hidden_size=n, num_layers=1, batch_first=True)
+            self.ClassificationFd1d9 = nn.Sequential(
+                nn.BatchNorm1d(n),
+                nn.ReLU(inplace=True)
+            )
+            self.Ddict.update({"d1d9": ("dynamics_delta_9", self.Fd1d9LSTM, self.ClassificationFd1d9)})
+            concat_size_on_last += n
+
+        if "d2d9" in f:
+            n = 150
+            self.Fd2d9LSTM = nn.LSTM(input_size=17, hidden_size=n, num_layers=1, batch_first=True)
+            self.ClassificationFd2d9 = nn.Sequential(
+                nn.BatchNorm1d(n),
+                nn.ReLU(inplace=True)
+            )
+            self.Ddict.update({"d2d9": ("dynamics_2nd_delta_9", self.Fd2d9LSTM, self.ClassificationFd2d9)})
+            concat_size_on_last += n
 
         if "si" in f:
-            self.SILSTM = nn.LSTM(input_size=1, hidden_size=10, num_layers=1, batch_first=True)
+            n = 10
+            self.SILSTM = nn.LSTM(input_size=1, hidden_size=n, num_layers=1, batch_first=True)
             self.ClassificationSI = nn.Sequential(
-                nn.BatchNorm1d(10),
+                nn.BatchNorm1d(n),
                 nn.ReLU(inplace=True)
             )
-            concat_size_on_last += 10
+            concat_size_on_last += n
+
+        if "auwise" in f:
+            n = 80
+            npart = int(n/5)
+            self.AUWISEsimple_apex = nn.Sequential(
+                nn.BatchNorm1d(119),
+                nn.Linear(119, npart),
+                nn.ReLU(inplace = True)
+            )
+
+            self.AUWISEsimple_offset = nn.Sequential(
+                nn.BatchNorm1d(119),
+                nn.Linear(119, npart),
+                nn.ReLU(inplace = True)
+            )
+
+            self.AUWISEsimple_onset = nn.Sequential(
+                nn.BatchNorm1d(119),
+                nn.Linear(119, npart),
+                nn.ReLU(inplace = True)
+            )
+
+            self.AUWISEsimple_whole_sequence = nn.Sequential(
+                nn.BatchNorm1d(119),
+                nn.Linear(119, npart),
+                nn.ReLU(inplace = True)
+            )
+
+            self.AUWISEsimple_whole_smile = nn.Sequential(
+                nn.BatchNorm1d(119),
+                nn.Linear(119, npart),
+                nn.ReLU(inplace = True)
+            )
+
+            self.AUWISEdict = [
+                self.AUWISEsimple_apex,
+                self.AUWISEsimple_offset,
+                self.AUWISEsimple_onset,
+                self.AUWISEsimple_whole_sequence,
+                self.AUWISEsimple_whole_smile
+            ]
+            concat_size_on_last += n
+
+        if "crossau" in f:
+            m = 640
+            n = 80
+            npart = int(n / 5)
+            mpart = int(m / 5)
+
+            self.CROSSAUsimple_apex = nn.Sequential(
+                nn.BatchNorm1d(1088),
+                nn.Linear(1088, mpart),
+                nn.ReLU(inplace=True),
+                nn.Linear(mpart, npart),
+                nn.ReLU(inplace=True)
+            )
+
+            self.CROSSAUsimple_offset = nn.Sequential(
+                nn.BatchNorm1d(1088),
+                nn.Linear(1088, mpart),
+                nn.ReLU(inplace=True),
+                nn.Linear(mpart, npart),
+                nn.ReLU(inplace=True)
+            )
+
+            self.CROSSAUsimple_onset = nn.Sequential(
+                nn.BatchNorm1d(1088),
+                nn.Linear(1088, mpart),
+                nn.ReLU(inplace=True),
+                nn.Linear(mpart, npart),
+                nn.ReLU(inplace=True)
+            )
+
+            self.CROSSAUsimple_whole_sequence = nn.Sequential(
+                nn.BatchNorm1d(1088),
+                nn.Linear(1088, mpart),
+                nn.ReLU(inplace=True),
+                nn.Linear(mpart, npart),
+                nn.ReLU(inplace=True)
+            )
+
+            self.CROSSAUsimple_whole_smile = nn.Sequential(
+                nn.BatchNorm1d(1088),
+                nn.Linear(1088, mpart),
+                nn.ReLU(inplace=True),
+                nn.Linear(mpart, npart),
+                nn.ReLU(inplace=True)
+            )
+
+            self.CROSSAUdict = [
+                self.CROSSAUsimple_apex,
+                self.CROSSAUsimple_offset,
+                self.CROSSAUsimple_onset,
+                self.CROSSAUsimple_whole_sequence,
+                self.CROSSAUsimple_whole_smile
+            ]
+            concat_size_on_last += n
 
         self.ClassificationCat = nn.Sequential(
             nn.Linear(concat_size_on_last, 1),
@@ -274,19 +438,19 @@ class DeepSmileNet(nn.Module):
         aus = cls_layer(aus)
         return aus
 
-    def forward(self,x, s, dynamics_features, frames_len):
+    def forward(self, x_videos, s, x_df_dict, frames_len):
         # TSA block
         tocat = []
 
         if "videos" in self.f:
-            x = self.TSA(x)
+            x_videos = self.TSA(x_videos)
 
             # FPN block
-            batch_size, timesteps, C, H, W = x.size()
+            batch_size, timesteps, C, H, W = x_videos.size()
             input_x = []
 
-            for l in range(x.size(0)): # Pozbywanie się pustych klatek
-                input_x.append(x[l,s[l]:,:,:,:])
+            for l in range(x_videos.size(0)): # Pozbywanie się pustych klatek
+                input_x.append(x_videos[l,s[l]:,:,:,:])
             #Przykładow: MAX S
             input_x = torch.cat(input_x,0)
             out = self.FPN(input_x)
@@ -294,34 +458,99 @@ class DeepSmileNet(nn.Module):
             # ConvLSTM + LSTM blocks
             current = 0
             _,new_c,new_w,new_h = out.size()
-            reshape_out = torch.zeros((batch_size, timesteps,new_c,new_w,new_h),device = x.device)
+            reshape_out = torch.zeros((batch_size, timesteps,new_c,new_w,new_h),device = x_videos.device)
 
             for index,l in enumerate(s):
                 reshape_out[index,l:] = out[current:current + timesteps - l]
                 current+= timesteps - l
-            x = reshape_out
+            x_videos = reshape_out
 
-            x = self.ConvLSTMLayer(x, s)
-            x = self.Classification(x)
-            tocat.append(x)
+            x_videos = self.ConvLSTMLayer(x_videos, s)
+            x_videos = self.Classification(x_videos)
+            tocat.append(x_videos)
 
         if "aus" in self.f:
-            aus = self.__forward_au_features(dynamics_features['action_units'], frames_len, self.AUsLSTM, self.ClassificationAUs)
-            tocat.append(aus)
-
-        if "d1da27" in self.f:
-            aus = self.__forward_au_features(dynamics_features['dynamics_delta_adjusted_27'], frames_len, self.Fd1da27LSTM, self.ClassificationFd1da27)
-            tocat.append(aus)
-
-        if "d2da27" in self.f:
-            aus = self.__forward_au_features(dynamics_features['dynamics_2nd_delta_adjusted_27'], frames_len, self.Fd2da27LSTM, self.ClassificationFd2da27)
+            aus = self.__forward_au_features(x_df_dict['action_units'], frames_len, self.AUsLSTM, self.ClassificationAUs)
             tocat.append(aus)
 
         if "si" in self.f:
-            si = self.__forward_au_features(dynamics_features['smile_intensities'], frames_len, self.SILSTM, self.ClassificationSI)
+            si = self.__forward_au_features(x_df_dict['smile_intensities'], frames_len, self.SILSTM, self.ClassificationSI)
             tocat.append(si)
+
+        d1d2features = [d1d2f for d1d2f in self.f if d1d2f.startswith("d1") or d1d2f.startswith("d2")]
+        for d1d2feature in d1d2features:
+            x_d1d2 = x_df_dict[self.Ddict.get(d1d2feature)[0]]
+            d1d2lstm = self.Ddict.get(d1d2feature)[1]
+            d1d2endclassifier = self.Ddict.get(d1d2feature)[2]
+            aus = self.__forward_au_features(x_d1d2, frames_len, d1d2lstm, d1d2endclassifier)
+            tocat.append(aus)
+
+        if "auwise" in self.f:
+            i = 0
+            for value in self.AUWISEdict:
+                x_auwise = x_df_dict['auwise'][:,i,:]
+                x_auwise = value(x_auwise)
+                tocat.append(x_auwise)
+                i+=1
+
+        if "crossau" in self.f:
+            i = 0
+            for value in self.CROSSAUdict:
+                x_crossau = x_df_dict['crossau'][:,i,:]
+                x_crossau = value(x_crossau)
+                tocat.append(x_crossau)
+                i+=1
 
         all_features = torch.cat(tocat,dim=1) #dim=1 - dim0 to u nas batch size
 
-        all_features = self.ClassificationCat(all_features)
-        return all_features
+        all_features_to_sigm = self.ClassificationCat(all_features)
+        return all_features_to_sigm, all_features
+
+class MultipleDeepSmileNet(nn.Module):
+    def __init__(self, deepSmileNets, variant):
+        self.variant = variant
+        super(MultipleDeepSmileNet,self).__init__()
+
+        n = 0
+
+        if variant == 1:
+            n = len(deepSmileNets)
+
+            for submodel in deepSmileNets:
+                for name, param in submodel.named_parameters():
+                    param.requires_grad = False
+        elif variant == 2:
+            for submodel in deepSmileNets:
+                for name, param in submodel.named_parameters():
+                    param.requires_grad = False
+                    if "ClassificationCat" in name and "weight" in name:
+                        size = param.size()[1]
+                        n+=size
+
+        self.deepSmileNets = nn.ModuleList(deepSmileNets)
+        self.Classification = nn.Sequential(
+            nn.Linear(n, 1),
+            nn.Sigmoid()
+        )
+
+        if variant == 1:
+            linear = self.Classification[0]
+            linear.weight.data.fill_(1/n)
+            nn.init.constant_(linear.bias.data, 0)
+        # nograd na wszystkim
+
+    def forward(self, x_videos, s, x_df_dict, frames_len):
+        preds = []
+        for deepSmileNet in self.deepSmileNets:
+            deepSmileNet.eval()
+            pred, pred_pre_class = deepSmileNet(x_videos, s, x_df_dict, frames_len)
+
+            if self.variant == 1:
+                preds.append(pred)
+            elif self.variant == 2:
+                preds.append(pred_pre_class)
+        preds_cat = torch.cat(preds, dim=1)
+
+        cat_all = self.Classification(preds_cat)
+
+        return preds_cat, cat_all

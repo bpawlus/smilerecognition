@@ -7,9 +7,6 @@ import os
 
 parser = argparse.ArgumentParser(description='RealSmileNet training')
 
-parser.add_argument('--model', type=str, help='directory of model state to load', default="")
-parser.add_argument('-f', nargs='+', required=True, type=list, default=["videos"], help='list of features for model creation.')
-parser.add_argument('--lr', '--learning-rate', default=valuesdict["learning_rate"], type=float, help='learning rate')
 
 def print_module_items(name, model_items):
     print(f"  {name}:")

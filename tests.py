@@ -52,7 +52,7 @@ import numpy
 import pandas as pd
 a = numpy.asarray([[1,2,3,4,5,6,7,8,9], [1.04,2.02,3.12,4.42,5.13,6.14,7.15,8.16,9.16], [1.04,2.02,3.12,4.42,5.13,6.14,7.15,8.16,9.16], [1.04,2.02,3.12,4.42,5.13,6.14,7.15,8.16,9.16]])
 df = pd.DataFrame(a).transpose()
-df.columns = ["e","d1","d2","d3"]
+df.columns = ["e","d[i]","d[i+1]","d[2]"]
 print(df)
 df.to_csv("tests/foo.csv", index=False, sep=" ")
 """
@@ -72,9 +72,40 @@ df = df2.join(df)
 print(df)
 """
 
-input = torch.randn(5)
-m = nn.BatchNorm1d(5)
-r = nn.ReLU(inplace=False)
-output = m(input)
-output2 = r(output)
-print(input)
+d = [np.array([32, 36, 27, 28, 30, 31]), np.array([32, 34, 30, 33, 29, 36, 24]), np.array([39, 40, 42])]
+
+n1,n2,n3 = len(d[0]),len(d[1]),len(d[2])
+dp = np.hstack([d[0],d[1],d[2]])
+m1,m2,m3,mp = d[0].mean(), d[1].mean(), d[2].mean(),dp.mean()
+v1,v2,v3,vp = d[0].var(), d[1].var(), d[2].var(),dp.var()
+
+print ("Means:",m1,m2,m3)
+print ("Variances:",v1,v2,v3)
+print ("Means p:",mp)
+print ("Variances p:",vp)
+
+ap = (n1*m1 + n2*m2 + n3*m3) / (n1+n2+n3) 
+mean_of_var = (n1*v1 + n2*v2 + n3*v3) / (n1+n2+n3) 
+var_of_means = (n1*(m1-ap)**2 + n2*(m2-ap)**2 + n3*(m3-ap)**2) / (n1+n2+n3)
+print ("Alt variances:",mean_of_var + var_of_means)
+
+n_prev = len(d[0])
+d_prev = d[0].mean()
+v_prev = d[0].var()
+for i in range(2):
+    n1,n2 = n_prev, len(d[i+1])
+    m1,m2 = d_prev, d[i+1].mean()
+    v1,v2 = v_prev, d[i+1].var()
+
+    print (f"{i} Means:",m1,m2)
+    print (f"{i} Variances:",v1,v2)
+
+    ap = (n1*m1 + n2*m2) / (n1+n2)
+    mean_of_var = (n1*v1 + n2*v2) / (n1+n2)
+    var_of_means = (n1*(m1-ap)**2 + n2*(m2-ap)**2) / (n1+n2)
+    print (f"{i} Alt variances:",mean_of_var + var_of_means)
+
+    n_prev = n_prev + n2
+    d_prev = ap
+    v_prev = mean_of_var + var_of_means
+    print(f"{i} Alt means:",ap)

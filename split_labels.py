@@ -4,7 +4,7 @@ import pandas as pd
 from constants import dirsdict
 from constants import valuesdict
 
-parser = argparse.ArgumentParser(description='Split labels to spontaneus and deliberate')
+parser = argparse.ArgumentParser(description='Split true labels to spontaneus and deliberate')
 
 parser.add_argument('--d', default = "", type=str,
                     help='subdir')
@@ -12,14 +12,13 @@ parser.add_argument('--d', default = "", type=str,
 def main():
     args = parser.parse_args()
 
-    dir = dirsdict["trained_dir"]
+    dir = dirsdict["train_dir"]
     if args.d != "":
         dir = os.path.join(dir, args.d)
 
 
     for features in os.listdir(dir):
         subdir = os.path.join(dir, features)
-        print()
         for fold in os.listdir(subdir):
             subdirfold = os.path.join(subdir, fold)
 

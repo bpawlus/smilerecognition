@@ -1,0 +1,528 @@
+use one gpu
+using features: {'videos', 'aus', 'si', 'auwise'}
+train size: 990, validate size: 125, test size: 125
+Epoch: 0 | Train Accuracy: 0.4787878692150116 | Train Loss: 23.380813717842102
+   Epoch: 0   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 23.380813717842102
+   Epoch: 0   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 23.380813717842102
+   Epoch: 0   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 23.380813717842102
+   Epoch: 0   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 23.380813717842102
+Epoch: 0 | Validate Accuracy: 0.4880000054836273 | Validate Loss: 49.29834496021271
+   Epoch: 0   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 49.29834496021271
+   Epoch: 0   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 49.29834496021271
+   Epoch: 0   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 49.29834496021271
+   Epoch: 0   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 49.29834496021271
+Epoch: 0 | Test Accuracy: 0.5040000081062317 | Test Loss: 49.42827481269836
+   Epoch: 0   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 49.42827481269836
+   Epoch: 0   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 49.42827481269836
+   Epoch: 0   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 49.42827481269836
+   Epoch: 0   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 49.42827481269836
+Epoch: 1 | Train Accuracy: 0.5060606002807617 | Train Loss: 23.134887099266052
+   Epoch: 1   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 23.134887099266052
+   Epoch: 1   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 23.134887099266052
+   Epoch: 1   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 23.134887099266052
+   Epoch: 1   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 23.134887099266052
+Epoch: 1 | Validate Accuracy: 0.527999997138977 | Validate Loss: 49.17621887683868
+   Epoch: 1   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 49.17621887683868
+   Epoch: 1   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 49.17621887683868
+   Epoch: 1   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 49.17621887683868
+   Epoch: 1   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 49.17621887683868
+Epoch: 1 | Test Accuracy: 0.527999997138977 | Test Loss: 49.12488470077515
+   Epoch: 1   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 49.12488470077515
+   Epoch: 1   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 49.12488470077515
+   Epoch: 1   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 49.12488470077515
+   Epoch: 1   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 49.12488470077515
+Epoch: 2 | Train Accuracy: 0.5616161823272705 | Train Loss: 22.90359765291214
+   Epoch: 2   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 22.90359765291214
+   Epoch: 2   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 22.90359765291214
+   Epoch: 2   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 22.90359765291214
+   Epoch: 2   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 22.90359765291214
+Epoch: 2 | Validate Accuracy: 0.5600000023841858 | Validate Loss: 48.97090766429901
+   Epoch: 2   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 48.97090766429901
+   Epoch: 2   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 48.97090766429901
+   Epoch: 2   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 48.97090766429901
+   Epoch: 2   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 48.97090766429901
+Epoch: 2 | Test Accuracy: 0.5440000295639038 | Test Loss: 48.882888078689575
+   Epoch: 2   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 48.882888078689575
+   Epoch: 2   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 48.882888078689575
+   Epoch: 2   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 48.882888078689575
+   Epoch: 2   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 48.882888078689575
+Epoch: 3 | Train Accuracy: 0.596969723701477 | Train Loss: 22.67161363363266
+   Epoch: 3   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 22.67161363363266
+   Epoch: 3   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 22.67161363363266
+   Epoch: 3   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 22.67161363363266
+   Epoch: 3   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 22.67161363363266
+Epoch: 3 | Validate Accuracy: 0.5839999914169312 | Validate Loss: 48.5560215139389
+   Epoch: 3   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 48.5560215139389
+   Epoch: 3   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 48.5560215139389
+   Epoch: 3   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 48.5560215139389
+   Epoch: 3   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 48.5560215139389
+Epoch: 3 | Test Accuracy: 0.5839999914169312 | Test Loss: 48.705518617630005
+   Epoch: 3   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 48.705518617630005
+   Epoch: 3   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 48.705518617630005
+   Epoch: 3   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 48.705518617630005
+   Epoch: 3   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 48.705518617630005
+Epoch: 4 | Train Accuracy: 0.6424242258071899 | Train Loss: 22.450760900974274
+   Epoch: 4   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 22.450760900974274
+   Epoch: 4   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 22.450760900974274
+   Epoch: 4   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 22.450760900974274
+   Epoch: 4   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 22.450760900974274
+Epoch: 4 | Validate Accuracy: 0.6159999966621399 | Validate Loss: 48.1986526966095
+   Epoch: 4   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 48.1986526966095
+   Epoch: 4   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 48.1986526966095
+   Epoch: 4   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 48.1986526966095
+   Epoch: 4   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 48.1986526966095
+Epoch: 4 | Test Accuracy: 0.5920000076293945 | Test Loss: 48.46882474422455
+   Epoch: 4   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 48.46882474422455
+   Epoch: 4   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 48.46882474422455
+   Epoch: 4   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 48.46882474422455
+   Epoch: 4   | Submodel: 3   | Test Submodel Accuracy: 0.7440000176429749   | Test Submodel Loss: 48.46882474422455
+Epoch: 5 | Train Accuracy: 0.6757575869560242 | Train Loss: 22.234532594680786
+   Epoch: 5   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 22.234532594680786
+   Epoch: 5   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 22.234532594680786
+   Epoch: 5   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 22.234532594680786
+   Epoch: 5   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 22.234532594680786
+Epoch: 5 | Validate Accuracy: 0.6240000128746033 | Validate Loss: 47.84605130195617
+   Epoch: 5   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 47.84605130195617
+   Epoch: 5   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 47.84605130195617
+   Epoch: 5   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 47.84605130195617
+   Epoch: 5   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 47.84605130195617
+Epoch: 5 | Test Accuracy: 0.6079999804496765 | Test Loss: 48.17613643169403
+   Epoch: 5   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 48.17613643169403
+   Epoch: 5   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 48.17613643169403
+   Epoch: 5   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 48.17613643169403
+   Epoch: 5   | Submodel: 3   | Test Submodel Accuracy: 0.7440000176429749   | Test Submodel Loss: 48.17613643169403
+Epoch: 6 | Train Accuracy: 0.6969696879386902 | Train Loss: 22.022865533828735
+   Epoch: 6   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 22.022865533828735
+   Epoch: 6   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 22.022865533828735
+   Epoch: 6   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 22.022865533828735
+   Epoch: 6   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 22.022865533828735
+Epoch: 6 | Validate Accuracy: 0.6399999856948853 | Validate Loss: 47.6691232252121
+   Epoch: 6   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 47.6691232252121
+   Epoch: 6   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 47.6691232252121
+   Epoch: 6   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 47.6691232252121
+   Epoch: 6   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 47.6691232252121
+Epoch: 6 | Test Accuracy: 0.6159999966621399 | Test Loss: 48.097865538597105
+   Epoch: 6   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 48.097865538597105
+   Epoch: 6   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 48.097865538597105
+   Epoch: 6   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 48.097865538597105
+   Epoch: 6   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 48.097865538597105
+Epoch: 7 | Train Accuracy: 0.7242424488067627 | Train Loss: 21.80657011270523
+   Epoch: 7   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 21.80657011270523
+   Epoch: 7   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 21.80657011270523
+   Epoch: 7   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 21.80657011270523
+   Epoch: 7   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 21.80657011270523
+Epoch: 7 | Validate Accuracy: 0.6639999747276306 | Validate Loss: 47.26207436084747
+   Epoch: 7   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 47.26207436084747
+   Epoch: 7   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 47.26207436084747
+   Epoch: 7   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 47.26207436084747
+   Epoch: 7   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 47.26207436084747
+Epoch: 7 | Test Accuracy: 0.6399999856948853 | Test Loss: 47.66914210796356
+   Epoch: 7   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 47.66914210796356
+   Epoch: 7   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 47.66914210796356
+   Epoch: 7   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 47.66914210796356
+   Epoch: 7   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 47.66914210796356
+Epoch: 8 | Train Accuracy: 0.7434343695640564 | Train Loss: 21.602978348731995
+   Epoch: 8   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 21.602978348731995
+   Epoch: 8   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 21.602978348731995
+   Epoch: 8   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 21.602978348731995
+   Epoch: 8   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 21.602978348731995
+Epoch: 8 | Validate Accuracy: 0.6639999747276306 | Validate Loss: 46.77639441490173
+   Epoch: 8   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 46.77639441490173
+   Epoch: 8   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 46.77639441490173
+   Epoch: 8   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 46.77639441490173
+   Epoch: 8   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 46.77639441490173
+Epoch: 8 | Test Accuracy: 0.656000018119812 | Test Loss: 47.378652691841125
+   Epoch: 8   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 47.378652691841125
+   Epoch: 8   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 47.378652691841125
+   Epoch: 8   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 47.378652691841125
+   Epoch: 8   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 47.378652691841125
+Epoch: 9 | Train Accuracy: 0.7585858702659607 | Train Loss: 21.411664843559265
+   Epoch: 9   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 21.411664843559265
+   Epoch: 9   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 21.411664843559265
+   Epoch: 9   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 21.411664843559265
+   Epoch: 9   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 21.411664843559265
+Epoch: 9 | Validate Accuracy: 0.6800000071525574 | Validate Loss: 46.88664041519165
+   Epoch: 9   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 46.88664041519165
+   Epoch: 9   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 46.88664041519165
+   Epoch: 9   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 46.88664041519165
+   Epoch: 9   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 46.88664041519165
+Epoch: 9 | Test Accuracy: 0.6480000019073486 | Test Loss: 47.339866104125974
+   Epoch: 9   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 47.339866104125974
+   Epoch: 9   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 47.339866104125974
+   Epoch: 9   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 47.339866104125974
+   Epoch: 9   | Submodel: 3   | Test Submodel Accuracy: 0.7279999852180481   | Test Submodel Loss: 47.339866104125974
+Epoch: 10 | Train Accuracy: 0.773737370967865 | Train Loss: 21.20717179775238
+   Epoch: 10   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 21.20717179775238
+   Epoch: 10   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 21.20717179775238
+   Epoch: 10   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 21.20717179775238
+   Epoch: 10   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 21.20717179775238
+Epoch: 10 | Validate Accuracy: 0.6959999799728394 | Validate Loss: 46.35659827709198
+   Epoch: 10   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 46.35659827709198
+   Epoch: 10   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 46.35659827709198
+   Epoch: 10   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 46.35659827709198
+   Epoch: 10   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 46.35659827709198
+Epoch: 10 | Test Accuracy: 0.656000018119812 | Test Loss: 47.149704051017764
+   Epoch: 10   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 47.149704051017764
+   Epoch: 10   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 47.149704051017764
+   Epoch: 10   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 47.149704051017764
+   Epoch: 10   | Submodel: 3   | Test Submodel Accuracy: 0.7279999852180481   | Test Submodel Loss: 47.149704051017764
+Epoch: 11 | Train Accuracy: 0.7818182110786438 | Train Loss: 21.014061629772186
+   Epoch: 11   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 21.014061629772186
+   Epoch: 11   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 21.014061629772186
+   Epoch: 11   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 21.014061629772186
+   Epoch: 11   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 21.014061629772186
+Epoch: 11 | Validate Accuracy: 0.6959999799728394 | Validate Loss: 46.211200618743895
+   Epoch: 11   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 46.211200618743895
+   Epoch: 11   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 46.211200618743895
+   Epoch: 11   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 46.211200618743895
+   Epoch: 11   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 46.211200618743895
+Epoch: 11 | Test Accuracy: 0.671999990940094 | Test Loss: 46.613740282058714
+   Epoch: 11   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 46.613740282058714
+   Epoch: 11   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 46.613740282058714
+   Epoch: 11   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 46.613740282058714
+   Epoch: 11   | Submodel: 3   | Test Submodel Accuracy: 0.7440000176429749   | Test Submodel Loss: 46.613740282058714
+Epoch: 12 | Train Accuracy: 0.7989898920059204 | Train Loss: 20.830311954021454
+   Epoch: 12   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 20.830311954021454
+   Epoch: 12   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 20.830311954021454
+   Epoch: 12   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 20.830311954021454
+   Epoch: 12   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 20.830311954021454
+Epoch: 12 | Validate Accuracy: 0.6959999799728394 | Validate Loss: 46.07587454795837
+   Epoch: 12   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 46.07587454795837
+   Epoch: 12   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 46.07587454795837
+   Epoch: 12   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 46.07587454795837
+   Epoch: 12   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 46.07587454795837
+Epoch: 12 | Test Accuracy: 0.6800000071525574 | Test Loss: 46.52912289619446
+   Epoch: 12   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 46.52912289619446
+   Epoch: 12   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 46.52912289619446
+   Epoch: 12   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 46.52912289619446
+   Epoch: 12   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 46.52912289619446
+Epoch: 13 | Train Accuracy: 0.8121212124824524 | Train Loss: 20.64023780822754
+   Epoch: 13   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 20.64023780822754
+   Epoch: 13   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 20.64023780822754
+   Epoch: 13   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 20.64023780822754
+   Epoch: 13   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 20.64023780822754
+Epoch: 13 | Validate Accuracy: 0.6959999799728394 | Validate Loss: 45.80322413921356
+   Epoch: 13   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 45.80322413921356
+   Epoch: 13   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 45.80322413921356
+   Epoch: 13   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 45.80322413921356
+   Epoch: 13   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 45.80322413921356
+Epoch: 13 | Test Accuracy: 0.6800000071525574 | Test Loss: 46.20053516864777
+   Epoch: 13   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 46.20053516864777
+   Epoch: 13   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 46.20053516864777
+   Epoch: 13   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 46.20053516864777
+   Epoch: 13   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 46.20053516864777
+Epoch: 14 | Train Accuracy: 0.8232323527336121 | Train Loss: 20.454416513442993
+   Epoch: 14   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 20.454416513442993
+   Epoch: 14   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 20.454416513442993
+   Epoch: 14   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 20.454416513442993
+   Epoch: 14   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 20.454416513442993
+Epoch: 14 | Validate Accuracy: 0.7120000123977661 | Validate Loss: 45.51534856796265
+   Epoch: 14   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 45.51534856796265
+   Epoch: 14   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 45.51534856796265
+   Epoch: 14   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 45.51534856796265
+   Epoch: 14   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 45.51534856796265
+Epoch: 14 | Test Accuracy: 0.6800000071525574 | Test Loss: 46.0182750749588
+   Epoch: 14   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 46.0182750749588
+   Epoch: 14   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 46.0182750749588
+   Epoch: 14   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 46.0182750749588
+   Epoch: 14   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 46.0182750749588
+Epoch: 15 | Train Accuracy: 0.8313131332397461 | Train Loss: 20.28145867586136
+   Epoch: 15   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 20.28145867586136
+   Epoch: 15   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 20.28145867586136
+   Epoch: 15   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 20.28145867586136
+   Epoch: 15   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 20.28145867586136
+Epoch: 15 | Validate Accuracy: 0.7200000286102295 | Validate Loss: 45.50930136680603
+   Epoch: 15   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 45.50930136680603
+   Epoch: 15   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 45.50930136680603
+   Epoch: 15   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 45.50930136680603
+   Epoch: 15   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 45.50930136680603
+Epoch: 15 | Test Accuracy: 0.6800000071525574 | Test Loss: 46.09392220973969
+   Epoch: 15   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 46.09392220973969
+   Epoch: 15   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 46.09392220973969
+   Epoch: 15   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 46.09392220973969
+   Epoch: 15   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 46.09392220973969
+Epoch: 16 | Train Accuracy: 0.8363636136054993 | Train Loss: 20.10433530807495
+   Epoch: 16   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 20.10433530807495
+   Epoch: 16   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 20.10433530807495
+   Epoch: 16   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 20.10433530807495
+   Epoch: 16   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 20.10433530807495
+Epoch: 16 | Validate Accuracy: 0.7279999852180481 | Validate Loss: 44.89699416160583
+   Epoch: 16   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 44.89699416160583
+   Epoch: 16   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 44.89699416160583
+   Epoch: 16   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 44.89699416160583
+   Epoch: 16   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 44.89699416160583
+Epoch: 16 | Test Accuracy: 0.6880000233650208 | Test Loss: 46.01862676620483
+   Epoch: 16   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 46.01862676620483
+   Epoch: 16   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 46.01862676620483
+   Epoch: 16   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 46.01862676620483
+   Epoch: 16   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 46.01862676620483
+Epoch: 17 | Train Accuracy: 0.8434343338012695 | Train Loss: 19.933573305606842
+   Epoch: 17   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 19.933573305606842
+   Epoch: 17   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 19.933573305606842
+   Epoch: 17   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 19.933573305606842
+   Epoch: 17   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 19.933573305606842
+Epoch: 17 | Validate Accuracy: 0.7360000014305115 | Validate Loss: 44.72778724193573
+   Epoch: 17   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 44.72778724193573
+   Epoch: 17   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 44.72778724193573
+   Epoch: 17   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 44.72778724193573
+   Epoch: 17   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 44.72778724193573
+Epoch: 17 | Test Accuracy: 0.6959999799728394 | Test Loss: 45.46366222858429
+   Epoch: 17   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 45.46366222858429
+   Epoch: 17   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 45.46366222858429
+   Epoch: 17   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 45.46366222858429
+   Epoch: 17   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 45.46366222858429
+Epoch: 18 | Train Accuracy: 0.8505050539970398 | Train Loss: 19.76948469877243
+   Epoch: 18   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 19.76948469877243
+   Epoch: 18   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 19.76948469877243
+   Epoch: 18   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 19.76948469877243
+   Epoch: 18   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 19.76948469877243
+Epoch: 18 | Validate Accuracy: 0.7440000176429749 | Validate Loss: 44.35269412994385
+   Epoch: 18   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 44.35269412994385
+   Epoch: 18   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 44.35269412994385
+   Epoch: 18   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 44.35269412994385
+   Epoch: 18   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 44.35269412994385
+Epoch: 18 | Test Accuracy: 0.6959999799728394 | Test Loss: 45.51493314743042
+   Epoch: 18   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 45.51493314743042
+   Epoch: 18   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 45.51493314743042
+   Epoch: 18   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 45.51493314743042
+   Epoch: 18   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 45.51493314743042
+Epoch: 19 | Train Accuracy: 0.8535353541374207 | Train Loss: 19.604533314704895
+   Epoch: 19   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 19.604533314704895
+   Epoch: 19   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 19.604533314704895
+   Epoch: 19   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 19.604533314704895
+   Epoch: 19   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 19.604533314704895
+Epoch: 19 | Validate Accuracy: 0.7440000176429749 | Validate Loss: 44.28333117485047
+   Epoch: 19   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 44.28333117485047
+   Epoch: 19   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 44.28333117485047
+   Epoch: 19   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 44.28333117485047
+   Epoch: 19   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 44.28333117485047
+Epoch: 19 | Test Accuracy: 0.6959999799728394 | Test Loss: 45.07846070766449
+   Epoch: 19   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 45.07846070766449
+   Epoch: 19   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 45.07846070766449
+   Epoch: 19   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 45.07846070766449
+   Epoch: 19   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 45.07846070766449
+Epoch: 20 | Train Accuracy: 0.8585858345031738 | Train Loss: 19.44543182849884
+   Epoch: 20   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 19.44543182849884
+   Epoch: 20   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 19.44543182849884
+   Epoch: 20   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 19.44543182849884
+   Epoch: 20   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 19.44543182849884
+Epoch: 20 | Validate Accuracy: 0.7599999904632568 | Validate Loss: 44.039928259849546
+   Epoch: 20   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 44.039928259849546
+   Epoch: 20   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 44.039928259849546
+   Epoch: 20   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 44.039928259849546
+   Epoch: 20   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 44.039928259849546
+Epoch: 20 | Test Accuracy: 0.6959999799728394 | Test Loss: 44.94949670791626
+   Epoch: 20   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 44.94949670791626
+   Epoch: 20   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 44.94949670791626
+   Epoch: 20   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 44.94949670791626
+   Epoch: 20   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 44.94949670791626
+Epoch: 21 | Train Accuracy: 0.8646464943885803 | Train Loss: 19.28968209028244
+   Epoch: 21   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 19.28968209028244
+   Epoch: 21   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 19.28968209028244
+   Epoch: 21   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 19.28968209028244
+   Epoch: 21   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 19.28968209028244
+Epoch: 21 | Validate Accuracy: 0.7599999904632568 | Validate Loss: 43.966787338256836
+   Epoch: 21   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 43.966787338256836
+   Epoch: 21   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 43.966787338256836
+   Epoch: 21   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 43.966787338256836
+   Epoch: 21   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 43.966787338256836
+Epoch: 21 | Test Accuracy: 0.6959999799728394 | Test Loss: 44.85036651134491
+   Epoch: 21   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 44.85036651134491
+   Epoch: 21   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 44.85036651134491
+   Epoch: 21   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 44.85036651134491
+   Epoch: 21   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 44.85036651134491
+Epoch: 22 | Train Accuracy: 0.868686854839325 | Train Loss: 19.134884297847748
+   Epoch: 22   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 19.134884297847748
+   Epoch: 22   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 19.134884297847748
+   Epoch: 22   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 19.134884297847748
+   Epoch: 22   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 19.134884297847748
+Epoch: 22 | Validate Accuracy: 0.7599999904632568 | Validate Loss: 43.545769958496095
+   Epoch: 22   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 43.545769958496095
+   Epoch: 22   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 43.545769958496095
+   Epoch: 22   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 43.545769958496095
+   Epoch: 22   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 43.545769958496095
+Epoch: 22 | Test Accuracy: 0.7039999961853027 | Test Loss: 44.64395490646362
+   Epoch: 22   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 44.64395490646362
+   Epoch: 22   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 44.64395490646362
+   Epoch: 22   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 44.64395490646362
+   Epoch: 22   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 44.64395490646362
+Epoch: 23 | Train Accuracy: 0.8717171549797058 | Train Loss: 18.98249414563179
+   Epoch: 23   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 18.98249414563179
+   Epoch: 23   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 18.98249414563179
+   Epoch: 23   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 18.98249414563179
+   Epoch: 23   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 18.98249414563179
+Epoch: 23 | Validate Accuracy: 0.7519999742507935 | Validate Loss: 43.40618441104889
+   Epoch: 23   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 43.40618441104889
+   Epoch: 23   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 43.40618441104889
+   Epoch: 23   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 43.40618441104889
+   Epoch: 23   | Submodel: 3   | Validate Submodel Accuracy: 0.7440000176429749   | Validate Submodel Loss: 43.40618441104889
+Epoch: 23 | Test Accuracy: 0.7039999961853027 | Test Loss: 44.28858813285827
+   Epoch: 23   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 44.28858813285827
+   Epoch: 23   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 44.28858813285827
+   Epoch: 23   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 44.28858813285827
+   Epoch: 23   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 44.28858813285827
+Epoch: 24 | Train Accuracy: 0.8747474551200867 | Train Loss: 18.836882829666138
+   Epoch: 24   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 18.836882829666138
+   Epoch: 24   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 18.836882829666138
+   Epoch: 24   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 18.836882829666138
+   Epoch: 24   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 18.836882829666138
+Epoch: 24 | Validate Accuracy: 0.7599999904632568 | Validate Loss: 43.281097512245175
+   Epoch: 24   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 43.281097512245175
+   Epoch: 24   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 43.281097512245175
+   Epoch: 24   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 43.281097512245175
+   Epoch: 24   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 43.281097512245175
+Epoch: 24 | Test Accuracy: 0.7360000014305115 | Test Loss: 44.37865791320801
+   Epoch: 24   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 44.37865791320801
+   Epoch: 24   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 44.37865791320801
+   Epoch: 24   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 44.37865791320801
+   Epoch: 24   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 44.37865791320801
+Epoch: 25 | Train Accuracy: 0.8797979950904846 | Train Loss: 18.693758726119995
+   Epoch: 25   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 18.693758726119995
+   Epoch: 25   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 18.693758726119995
+   Epoch: 25   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 18.693758726119995
+   Epoch: 25   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 18.693758726119995
+Epoch: 25 | Validate Accuracy: 0.7599999904632568 | Validate Loss: 43.063069710731504
+   Epoch: 25   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 43.063069710731504
+   Epoch: 25   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 43.063069710731504
+   Epoch: 25   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 43.063069710731504
+   Epoch: 25   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 43.063069710731504
+Epoch: 25 | Test Accuracy: 0.7440000176429749 | Test Loss: 44.18983039855957
+   Epoch: 25   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 44.18983039855957
+   Epoch: 25   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 44.18983039855957
+   Epoch: 25   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 44.18983039855957
+   Epoch: 25   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 44.18983039855957
+Epoch: 26 | Train Accuracy: 0.8848484754562378 | Train Loss: 18.553223460912704
+   Epoch: 26   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 18.553223460912704
+   Epoch: 26   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 18.553223460912704
+   Epoch: 26   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 18.553223460912704
+   Epoch: 26   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 18.553223460912704
+Epoch: 26 | Validate Accuracy: 0.7599999904632568 | Validate Loss: 43.07021683216095
+   Epoch: 26   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 43.07021683216095
+   Epoch: 26   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 43.07021683216095
+   Epoch: 26   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 43.07021683216095
+   Epoch: 26   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 43.07021683216095
+Epoch: 26 | Test Accuracy: 0.7440000176429749 | Test Loss: 44.299050121307374
+   Epoch: 26   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 44.299050121307374
+   Epoch: 26   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 44.299050121307374
+   Epoch: 26   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 44.299050121307374
+   Epoch: 26   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 44.299050121307374
+Epoch: 27 | Train Accuracy: 0.8888888955116272 | Train Loss: 18.40529775619507
+   Epoch: 27   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 18.40529775619507
+   Epoch: 27   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 18.40529775619507
+   Epoch: 27   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 18.40529775619507
+   Epoch: 27   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 18.40529775619507
+Epoch: 27 | Validate Accuracy: 0.7680000066757202 | Validate Loss: 42.936635527610775
+   Epoch: 27   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 42.936635527610775
+   Epoch: 27   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 42.936635527610775
+   Epoch: 27   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 42.936635527610775
+   Epoch: 27   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 42.936635527610775
+Epoch: 27 | Test Accuracy: 0.7440000176429749 | Test Loss: 43.816400384902956
+   Epoch: 27   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 43.816400384902956
+   Epoch: 27   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 43.816400384902956
+   Epoch: 27   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 43.816400384902956
+   Epoch: 27   | Submodel: 3   | Test Submodel Accuracy: 0.7440000176429749   | Test Submodel Loss: 43.816400384902956
+Epoch: 28 | Train Accuracy: 0.8898990154266357 | Train Loss: 18.271222174167633
+   Epoch: 28   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 18.271222174167633
+   Epoch: 28   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 18.271222174167633
+   Epoch: 28   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 18.271222174167633
+   Epoch: 28   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 18.271222174167633
+Epoch: 28 | Validate Accuracy: 0.7680000066757202 | Validate Loss: 42.49123390674591
+   Epoch: 28   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 42.49123390674591
+   Epoch: 28   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 42.49123390674591
+   Epoch: 28   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 42.49123390674591
+   Epoch: 28   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 42.49123390674591
+Epoch: 28 | Test Accuracy: 0.7519999742507935 | Test Loss: 43.67105748653412
+   Epoch: 28   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 43.67105748653412
+   Epoch: 28   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 43.67105748653412
+   Epoch: 28   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 43.67105748653412
+   Epoch: 28   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 43.67105748653412
+Epoch: 29 | Train Accuracy: 0.8909090757369995 | Train Loss: 18.137152433395386
+   Epoch: 29   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 18.137152433395386
+   Epoch: 29   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 18.137152433395386
+   Epoch: 29   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 18.137152433395386
+   Epoch: 29   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 18.137152433395386
+Epoch: 29 | Validate Accuracy: 0.7680000066757202 | Validate Loss: 42.07955192327499
+   Epoch: 29   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 42.07955192327499
+   Epoch: 29   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 42.07955192327499
+   Epoch: 29   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 42.07955192327499
+   Epoch: 29   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 42.07955192327499
+Epoch: 29 | Test Accuracy: 0.7519999742507935 | Test Loss: 43.45494770050049
+   Epoch: 29   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 43.45494770050049
+   Epoch: 29   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 43.45494770050049
+   Epoch: 29   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 43.45494770050049
+   Epoch: 29   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 43.45494770050049
+Epoch: 30 | Train Accuracy: 0.8939393758773804 | Train Loss: 18.006027340888977
+   Epoch: 30   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 18.006027340888977
+   Epoch: 30   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 18.006027340888977
+   Epoch: 30   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 18.006027340888977
+   Epoch: 30   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 18.006027340888977
+Epoch: 30 | Validate Accuracy: 0.7599999904632568 | Validate Loss: 42.177030115127565
+   Epoch: 30   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 42.177030115127565
+   Epoch: 30   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 42.177030115127565
+   Epoch: 30   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 42.177030115127565
+   Epoch: 30   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 42.177030115127565
+Epoch: 30 | Test Accuracy: 0.7599999904632568 | Test Loss: 43.41063885211945
+   Epoch: 30   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 43.41063885211945
+   Epoch: 30   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 43.41063885211945
+   Epoch: 30   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 43.41063885211945
+   Epoch: 30   | Submodel: 3   | Test Submodel Accuracy: 0.7440000176429749   | Test Submodel Loss: 43.41063885211945
+Epoch: 31 | Train Accuracy: 0.8969696760177612 | Train Loss: 17.877947211265564
+   Epoch: 31   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 17.877947211265564
+   Epoch: 31   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 17.877947211265564
+   Epoch: 31   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 17.877947211265564
+   Epoch: 31   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 17.877947211265564
+Epoch: 31 | Validate Accuracy: 0.7599999904632568 | Validate Loss: 42.02082019329071
+   Epoch: 31   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 42.02082019329071
+   Epoch: 31   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 42.02082019329071
+   Epoch: 31   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 42.02082019329071
+   Epoch: 31   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 42.02082019329071
+Epoch: 31 | Test Accuracy: 0.7599999904632568 | Test Loss: 43.40069236278534
+   Epoch: 31   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 43.40069236278534
+   Epoch: 31   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 43.40069236278534
+   Epoch: 31   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 43.40069236278534
+   Epoch: 31   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 43.40069236278534
+Epoch: 32 | Train Accuracy: 0.8969696760177612 | Train Loss: 17.755906224250793
+   Epoch: 32   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 17.755906224250793
+   Epoch: 32   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 17.755906224250793
+   Epoch: 32   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 17.755906224250793
+   Epoch: 32   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 17.755906224250793
+Epoch: 32 | Validate Accuracy: 0.7599999904632568 | Validate Loss: 41.93147975921631
+   Epoch: 32   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 41.93147975921631
+   Epoch: 32   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 41.93147975921631
+   Epoch: 32   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 41.93147975921631
+   Epoch: 32   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 41.93147975921631
+Epoch: 32 | Test Accuracy: 0.7599999904632568 | Test Loss: 43.017330493927
+   Epoch: 32   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 43.017330493927
+   Epoch: 32   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 43.017330493927
+   Epoch: 32   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 43.017330493927
+   Epoch: 32   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 43.017330493927
+Epoch: 33 | Train Accuracy: 0.8979797959327698 | Train Loss: 17.625283658504486
+   Epoch: 33   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 17.625283658504486
+   Epoch: 33   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 17.625283658504486
+   Epoch: 33   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 17.625283658504486
+   Epoch: 33   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 17.625283658504486
+Epoch: 33 | Validate Accuracy: 0.7760000228881836 | Validate Loss: 41.775453000068666
+   Epoch: 33   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 41.775453000068666
+   Epoch: 33   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 41.775453000068666
+   Epoch: 33   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 41.775453000068666
+   Epoch: 33   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 41.775453000068666
+Epoch: 33 | Test Accuracy: 0.7599999904632568 | Test Loss: 43.215977511405946
+   Epoch: 33   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 43.215977511405946
+   Epoch: 33   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 43.215977511405946
+   Epoch: 33   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 43.215977511405946
+   Epoch: 33   | Submodel: 3   | Test Submodel Accuracy: 0.7440000176429749   | Test Submodel Loss: 43.215977511405946
+Epoch: 34 | Train Accuracy: 0.9010100960731506 | Train Loss: 17.499680548906326
+   Epoch: 34   | Submodel: 0   | Train Submodel Accuracy: 0.8070707321166992   | Train Submodel Loss: 17.499680548906326
+   Epoch: 34   | Submodel: 1   | Train Submodel Accuracy: 0.8858585953712463   | Train Submodel Loss: 17.499680548906326
+   Epoch: 34   | Submodel: 2   | Train Submodel Accuracy: 0.7676767706871033   | Train Submodel Loss: 17.499680548906326
+   Epoch: 34   | Submodel: 3   | Train Submodel Accuracy: 0.9202020168304443   | Train Submodel Loss: 17.499680548906326
+Epoch: 34 | Validate Accuracy: 0.7760000228881836 | Validate Loss: 41.95944416999817
+   Epoch: 34   | Submodel: 0   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 41.95944416999817
+   Epoch: 34   | Submodel: 1   | Validate Submodel Accuracy: 0.8240000009536743   | Validate Submodel Loss: 41.95944416999817
+   Epoch: 34   | Submodel: 2   | Validate Submodel Accuracy: 0.800000011920929   | Validate Submodel Loss: 41.95944416999817
+   Epoch: 34   | Submodel: 3   | Validate Submodel Accuracy: 0.7360000014305115   | Validate Submodel Loss: 41.95944416999817
+Epoch: 34 | Test Accuracy: 0.7680000066757202 | Test Loss: 42.91298535346985
+   Epoch: 34   | Submodel: 0   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 42.91298535346985
+   Epoch: 34   | Submodel: 1   | Test Submodel Accuracy: 0.7839999794960022   | Test Submodel Loss: 42.91298535346985
+   Epoch: 34   | Submodel: 2   | Test Submodel Accuracy: 0.7519999742507935   | Test Submodel Loss: 42.91298535346985
+   Epoch: 34   | Submodel: 3   | Test Submodel Accuracy: 0.7360000014305115   | Test Submodel Loss: 42.91298535346985

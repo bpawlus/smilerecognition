@@ -1,6 +1,8 @@
 import os
+
 from dataset import UVANEMODataGenerator
 from model import DeepSmileNet
+from model import MultipleDeepSmileNet
 import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
@@ -12,36 +14,38 @@ import shutil
 import pandas as pd
 import collections
 
+
 class UVANEMO():
-    def __init__(self, epochs, lr, label_path, folds_path, folds_orig_path, videos_path, videos_frequency, features_path, vgg_path,
-                 batch_size_train, batch_size_valtest, models_path, calcminmax_features, f):
+    def __init__(self, epochs, lr, folds_path, videos_path, videos_frequency, features_path, vgg_path,
+                 batch_size_train, batch_size_valtest, calcminmax_features):
         self.epochs = epochs
         self.lr = lr
         self.batch_size_train = batch_size_train
         self.batch_size_valtest = batch_size_valtest
         self.videos_frequency = videos_frequency
         self.calcminmax_features = calcminmax_features
-        self.f = f
 
-        self.label_path = label_path
         self.folds_path = folds_path
-        self.folds_orig_path = folds_orig_path
-        self.models_path = models_path
 
         self.videos_path = videos_path
         self.features_path = features_path
         self.vgg_path = vgg_path
 
-    def loss_func_weighted(self, output, target, weights):
-        # weighted binary cross entropy
-        loss = weights[0] * ((1 - target) * torch.log(1 - output)) + weights[1] * (target * torch.log(output))
+    # def loss_func_weighted(self, output, target, weights):
+    #     # weighted binary cross entropy
+    #     loss = weights[0] * ((1 - target) * torch.log(1 - output)) + weights[1] * (target * torch.log(output))
+    #
+    #     return torch.neg(torch.mean(loss))
 
-        return torch.neg(torch.mean(loss))
+    def out(self, info, file):
+        print(info)
+
+        with open(f"{file}", "a") as f:
+            f.write(info + "\n")
 
     def outverbose(self, info):
-        print(info)
-        with open(f"{self.out_verbose}", "a") as f:
-            f.write(info + "\n")
+        self.out(info, self.out_verbose)
+
 
     def __determine_value(self, name):
         if "deliberate" in name:
@@ -51,16 +55,13 @@ class UVANEMO():
         else:
             return -1
 
-    def split_orig(self, test_fold):
-        if not os.path.isdir(self.label_path):
-            return
-
+    def split_orig(self, test_fold, label_path, folds_path):
         for i in range(9):
             try:
-                shutil.rmtree(os.path.join(self.folds_path, str(i + 1)))
-                os.makedirs(os.path.join(self.folds_path, str(i + 1)))
+                shutil.rmtree(os.path.join(folds_path, str(i + 1)))
+                os.makedirs(os.path.join(folds_path, str(i + 1)))
             except FileNotFoundError:
-                os.makedirs(os.path.join(self.folds_path, str(i + 1)))
+                os.makedirs(os.path.join(folds_path, str(i + 1)))
 
             fold_train_labels = dict()
             fold_validate_labels = dict()
@@ -73,7 +74,7 @@ class UVANEMO():
 
             for f in train_folds:
                 for ps in ["P", "S"]:
-                    origfolds = os.path.join(self.folds_orig_path, f"{ps}_fold_all_{f}.txt")
+                    origfolds = os.path.join(label_path, f"{ps}_fold_all_{f}.txt")
                     with open(origfolds, "r") as readfile:
                         lines = readfile.readlines()
                         for line in lines:
@@ -82,7 +83,7 @@ class UVANEMO():
             fold_train_labels = collections.OrderedDict(sorted(fold_train_labels.items()))
 
             for ps in ["P", "S"]:
-                origfolds = os.path.join(self.folds_orig_path, f"{ps}_fold_all_{validate_fold}.txt")
+                origfolds = os.path.join(label_path, f"{ps}_fold_all_{validate_fold}.txt")
                 with open(origfolds, "r") as readfile:
                     lines = readfile.readlines()
                     for line in lines:
@@ -90,7 +91,7 @@ class UVANEMO():
                         fold_validate_labels.update({line: self.__determine_value(line)})
                 fold_validate_labels = collections.OrderedDict(sorted(fold_validate_labels.items()))
 
-                origfolds = os.path.join(self.folds_orig_path, f"{ps}_fold_all_{test_fold}.txt")
+                origfolds = os.path.join(label_path, f"{ps}_fold_all_{test_fold}.txt")
                 with open(origfolds, "r") as readfile:
                     lines = readfile.readlines()
                     for line in lines:
@@ -99,200 +100,149 @@ class UVANEMO():
                 fold_test_labels = collections.OrderedDict(sorted(fold_test_labels.items()))
 
 
-            fold_train_dir = os.path.join(self.folds_path, str(i + 1), "train.json")
+            fold_train_dir = os.path.join(folds_path, str(i + 1), "train.json")
             with open(fold_train_dir, "w") as outfile:
                 json.dump(fold_train_labels, outfile, indent=4)
 
-            fold_validate_dir = os.path.join(self.folds_path, str(i + 1), "validate.json")
+            fold_validate_dir = os.path.join(folds_path, str(i + 1), "validate.json")
             with open(fold_validate_dir, "w") as outfile:
                 json.dump(fold_validate_labels, outfile, indent=4)
 
-            fold_test_dir = os.path.join(self.folds_path, str(i + 1), "test.json")
+            fold_test_dir = os.path.join(folds_path, str(i + 1), "test.json")
             with open(fold_test_dir, "w") as outfile:
                 json.dump(fold_test_labels, outfile, indent=4)
 
             print(f"Fold rest: {len(fold_train_labels)%self.batch_size_train} {len(fold_validate_labels)%self.batch_size_valtest} {len(fold_test_labels)%self.batch_size_valtest}")
 
-    def split(self, k):
-        if not os.path.isdir(self.label_path):
-            return
 
-        splits = KFold(n_splits=k, shuffle=True, random_state=50)
-
-        train_labels = os.path.join(self.label_path, "train.json")
-        with open(train_labels) as f:
-            labels_dict = json.load(f)
-            labels_list = list(labels_dict)
-
-        fold_splits = splits.split(np.arange(len(labels_list)))
-        for fold, split in enumerate(fold_splits):
-            fold_train_labels = dict()
-            for di in [{labels_list[i]: labels_dict[labels_list[i]]} for i in split[0]]:
-                fold_train_labels.update(di)
-
-            fold_validate_labels = dict()
-            for di in [{labels_list[i]: labels_dict[labels_list[i]]} for i in split[1]]:
-                fold_validate_labels.update(di)
-
-            try:
-                shutil.rmtree(os.path.join(self.folds_path, str(fold + 1)))
-                os.makedirs(os.path.join(self.folds_path, str(fold + 1)))
-            except FileNotFoundError:
-                os.makedirs(os.path.join(self.folds_path, str(fold + 1)))
-
-            fold_train_dir = os.path.join(self.folds_path, str(fold + 1), "train.json")
-            with open(fold_train_dir, "w") as outfile:
-                json.dump(fold_train_labels, outfile, indent=4)
-
-            fold_validate_dir = os.path.join(self.folds_path, str(fold + 1), "validate.json")
-            with open(fold_validate_dir, "w") as outfile:
-                json.dump(fold_validate_labels, outfile, indent=4)
-
-            fold_test_dir = os.path.join(self.folds_path, str(fold + 1), "test.json")
-            shutil.copy2(os.path.join(self.label_path, "test.json"), fold_test_dir)
-
-            # self.outverbose(f"train size: {len(split[0])}, validate size: {len(split[1])}, test size: {0}")
-
-        return
-
-    def prepareData(self, idx):
-        current_path = os.path.join(self.folds_path, idx)
-
-        if not os.path.isdir(current_path):
-            return
-
-        os.makedirs(os.path.join(self.models_path, str(idx)))
-        os.makedirs(os.path.join(self.models_path, str(idx), "models"))
-
-        self.out_evaldata = os.path.join(self.models_path, str(idx), "model")
-        self.out_verbose = os.path.join(self.models_path, str(idx), "verbose.txt")
-        self.out_model = os.path.join(self.models_path, str(idx), "models")
-        self.out_csv_labels = os.path.join(self.models_path, str(idx), "labels.csv")
-
+    def prepare_loaders(self, loader_data_path, features):
         # ===== TRAIN =====
-        train_labels = os.path.join(current_path, "train.json")
+        train_labels = os.path.join(loader_data_path, "train.json")
         params = {"label_path": train_labels,
                   "videos_path": self.videos_path,
                   "videos_frequency": self.videos_frequency,
                   "features_path": self.features_path,
                   "vgg_path": self.vgg_path,
                   "calcminmax_features": self.calcminmax_features,
-                  "feature_list": self.f
+                  "feature_list": features
                   }
 
         # ** - unpack do nazwanych argumentów (dictionary)
         self.train_generator = UVANEMODataGenerator(**params)  # dziedziczy po torch.utils.data.Dataset
         self.train_loader = DataLoader(self.train_generator, batch_size=self.batch_size_train, shuffle=True)
         self.train_size = len(self.train_generator)
-        shutil.copy2(os.path.join(current_path, "train.json"), os.path.join(self.models_path, str(idx), "train.json"))
 
         # ===== VALIDATE =====
-        validate_labels = os.path.join(current_path, "validate.json")
+        validate_labels = os.path.join(loader_data_path, "validate.json")
         params = {"label_path": validate_labels,
                   "videos_path": self.videos_path,
                   "videos_frequency": self.videos_frequency,
                   "features_path": self.features_path,
                   "vgg_path": self.vgg_path,
-                  "feature_list": self.f,
+                  "feature_list": features,
                   "test": True}
 
         self.validate_generator = UVANEMODataGenerator(**params)
         self.validate_loader = DataLoader(self.validate_generator, batch_size=self.batch_size_valtest, shuffle=True)
         self.validate_size = len(self.validate_generator)
-        shutil.copy2(os.path.join(current_path, "validate.json"), os.path.join(self.models_path, str(idx), "validate.json"))
+
         # ===== =====
 
         # ===== TEST =====
-        test_labels = os.path.join(current_path, "test.json")
+        test_labels = os.path.join(loader_data_path, "test.json")
         params = {"label_path": test_labels,
                   "videos_path": self.videos_path,
                   "videos_frequency": self.videos_frequency,
                   "features_path": self.features_path,
                   "vgg_path": self.vgg_path,
-                  "feature_list": self.f,
+                  "feature_list": features,
                   "test": True}
 
         self.test_generator = UVANEMODataGenerator(**params)
         self.test_loader = DataLoader(self.test_generator, batch_size=self.batch_size_valtest, shuffle=True)
         self.test_size = len(self.test_generator)
-        shutil.copy2(os.path.join(current_path, "test.json"), os.path.join(self.models_path, str(idx), "test.json"))
+
         # ===== =====
 
         self.validate_penalty = self.train_size / self.validate_size
         self.test_penalty = self.train_size / self.test_size
-        self.architecture = DeepSmileNet(self.f)
 
-    def __train_forward(self, device, data_loader, weights, train, optimizer, loss_func):
-        total_loss = 0
-        pred_label = []
-        true_label = []
-        label_idx = []
-        names = []
 
-        for idx, name, x, y, s, dynamics_features, frames_len in data_loader:
-            # Obcinanie, nie kazde wideo jest tej samej dlugosci
+    def copy_loaders(self, loader_data_path, target_path):
+        shutil.copy2(os.path.join(loader_data_path, "train.json"), os.path.join(target_path, "train.json"))
+        shutil.copy2(os.path.join(loader_data_path, "validate.json"), os.path.join(target_path, "validate.json"))
+        shutil.copy2(os.path.join(loader_data_path, "test.json"), os.path.join(target_path, "test.json"))
 
-            index = s.min().item()
-            s = s - s.min()
-            x = x.type(torch.FloatTensor)[:, index:]
-            y = y.type(torch.FloatTensor)
-            if torch.cuda.device_count() > 0:
-                x = x.to(device)
-                y = y.to(device)
-                s = s.to(device)
+    def prepare_output_data(self, target_path):
+        self.out_verbose = os.path.join(target_path, "verbose.txt")
+        self.out_csv_labels = os.path.join(target_path, "labels.csv")
 
-            keys = list(dynamics_features.keys())
-            for key in keys:
-                try:
-                    dynamics_features[key].size(dim=2)
-                    dynamics_features[key] = dynamics_features[key].type(torch.FloatTensor)[:, :]
-                    if torch.cuda.device_count() > 0:
-                        dynamics_features[key] = dynamics_features[key].to(device)
-                except IndexError:
-                    del dynamics_features[key]
+    def prepare_output_models(self, target_path):
+        os.makedirs(os.path.join(target_path, "models"))
+        self.out_evaldata = os.path.join(target_path, "model")
+        self.out_model = os.path.join(target_path, "models")
 
-            pred = self.architecture(x, s, dynamics_features, frames_len)
-            pred_y = (pred >= 0.5).float().to(device).data
 
-            pred_label.append(pred_y)
-            true_label.append(y)
-            label_idx.append(idx)
-            names.append(name)
+    def __init_loaders(self, loader_data_path, folder_path, loader_features):
+        self.prepare_loaders(loader_data_path, loader_features)
+        self.copy_loaders(loader_data_path, folder_path)
 
-            if weights == None:
-                loss = loss_func(pred, y)
-            else:
-                loss = loss_func(pred, y, weights=weights)
+    def __init_outputs(self,folder_path):
+        self.prepare_output_models(folder_path)
+        self.prepare_output_data(folder_path)
 
-            for W in self.architecture.parameters():
-                loss += 0.001 * W.norm(2)
 
-            total_loss += loss.item()
-            if train:
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
+    def prepare_data_training(self, idx, working_dir, features):
+        loader_data_path = os.path.join(self.folds_path, idx)
+        if not os.path.isdir(loader_data_path):
+            return
 
-        return (total_loss, pred_label, true_label, label_idx, names)
+        self.folder_path = os.path.join(working_dir, str(idx))
+        os.makedirs(self.folder_path)
 
-    def train(self, idx, weights=None):
-        # Może CUDA?
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        cnt = torch.cuda.device_count()
+        self.__init_loaders(loader_data_path, self.folder_path, features)
+        self.__init_outputs(self.folder_path)
 
-        if cnt > 1:
-            self.outverbose(f"use {torch.cuda.device_count()} GPUS")
-            self.architecture = nn.DataParallel(self.architecture)
-        elif cnt == 1:
-            self.outverbose(f"use one gpu")
-        self.outverbose(f"using features: {self.f}")
-        self.outverbose(f"using fold: {idx}")
-        self.outverbose(f"train size: {self.train_size}, validate size: {self.validate_size}, test size: {self.test_size}")
+        self.architecture = DeepSmileNet(features)
 
-        self.architecture.to(device)
-        optimizer = torch.optim.Adam(self.architecture.parameters(), lr=self.lr)
-        loss_func = (nn.BCELoss() if weights == None else self.loss_func_weighted)
+    def prepare_data_load(self, idx, working_dir, state_dir, variant, ignore):
+        loader_data_path = os.path.join(self.folds_path, idx)
+        if not os.path.isdir(loader_data_path):
+            return
 
+        self.variant = variant
+
+        if not os.path.isdir(loader_data_path):
+            return
+
+        self.in_models = os.path.join(state_dir, "models", idx)
+        features = set()
+        realSmileNets = []
+        model_states = [f for f in os.listdir(self.in_models) if os.path.isfile(os.path.join(self.in_models, f))]
+        for model_state in model_states:
+            model_features = model_state.split(".")[0].split("_")
+
+            conflicts = [ignore_feature for ignore_feature in ignore if ignore_feature in model_features]
+            if any(conflicts):
+                continue
+            realSmileNet = DeepSmileNet(model_features)
+            checkpoint = torch.load(os.path.join(self.in_models, model_state))
+            realSmileNet.load_state_dict(checkpoint, strict=False)
+            realSmileNets.append(realSmileNet)
+
+            for model_feature in model_features:
+                features.add(model_feature)
+
+        self.folder_path = os.path.join(working_dir, str(idx))
+        os.makedirs(self.folder_path)
+
+        self.__init_loaders(loader_data_path, self.folder_path, features)
+        self.__init_outputs(self.folder_path)
+
+        self.architecture = MultipleDeepSmileNet(realSmileNets, self.variant)
+
+
+    def prepare_training_statistics(self):
         self.last_epochs = []
 
         self.last_train_accs = []
@@ -310,9 +260,6 @@ class UVANEMO():
         self.last_test_pred_labels = {}
         self.last_test_true_labels = {}
 
-        # Najlepsze accuracy z walidacyjnego
-        best_accuracy = 0
-
         ds = self.train_loader.dataset
         for i, (k, v) in enumerate(ds.index_name_dic.items()):
             self.last_train_pred_labels[v[0]] = []
@@ -328,111 +275,17 @@ class UVANEMO():
             self.last_test_pred_labels[v[0]] = []
             self.last_test_true_labels[v[0]] = [v[1]]
 
-        for epoch in range(self.epochs):
-            self.last_epochs.append(epoch)
-            # ===== TRAIN =====
+    def save_model(self, e, va, vl, ta, tl):
+        m_name_value_loss = "{value:.2f}"
+        m_name_value_acc = "{value:.4f}"
+        m_epoch = f"E-{e}"
+        m_va = f"VA-{m_name_value_acc.format(value=va)}"
+        m_vl = f"VL-{m_name_value_loss.format(value=vl)}"
+        m_ta = f"TA-{m_name_value_acc.format(value=ta)}"
+        m_tl = f"TL-{m_name_value_loss.format(value=tl)}"
 
-            # Wywoluje __getitem__ z torch.utils.data.Dataset
-            # x - BATCH SIZE - MAX DŁUGOŚĆ WIDEO - RGB - 48 X 48 jpg
-            # y - BATCH SIZE - LABEL
-            # s - BATCH SIZE - MAX DŁUGOŚĆ W BATCHU MINUS DŁUGOŚĆ WIDEO OBECNEGO  (DO CONVLSTM POTRZEBNE TAKIE WARTOSCI
-
-            (train_loss, pred_label, true_label, label_idx, names) = self.__train_forward(device, self.train_loader, weights, True, optimizer, loss_func)
-
-            pred_label = torch.cat(pred_label, 0)
-            true_label = torch.cat(true_label, 0)
-            names =[item for sublist in names for item in sublist]
-
-            train_accuracy = torch.sum(pred_label == true_label).type(torch.FloatTensor) / true_label.size(0)
-            self.outverbose(
-                'Epoch: ' + str(epoch) +
-                ' | Train Accuracy: ' + str(train_accuracy.item()) +
-                ' | Train Loss: ' + str(train_loss)
-            )
-            self.last_train_accs.append(train_accuracy.item())
-            self.last_train_losses.append(train_loss)
-            for i in range(len(names)):
-                val = None
-                if torch.cuda.device_count() > 0:
-                    val = int(pred_label[i].cpu().item())
-                else:
-                    val = int(pred_label[i].item())
-                self.last_train_pred_labels[names[i]].append(val)
-
-            # ===== =====
-
-            self.architecture.eval()  # to samo co self.architecture.train(false)
-
-            # ===== VALIDATE =====
-
-            (validate_loss, pred_label, true_label, label_idx, names) = self.__train_forward(device, self.validate_loader, weights, False, optimizer, loss_func)
-
-            pred_label = torch.cat(pred_label, 0)
-            true_label = torch.cat(true_label, 0)
-            names = [item for sublist in names for item in sublist]
-
-            validate_accuracy = torch.sum(pred_label == true_label).type(torch.FloatTensor) / true_label.size(0)
-            self.outverbose(
-                'Epoch: ' + str(epoch) +
-                ' | Validate Accuracy: ' + str( validate_accuracy.item()) +
-                ' | Validate Loss (NORMALIZED): ' + str(validate_loss * self.validate_penalty)
-            )
-            self.last_val_accs.append(validate_accuracy.item())
-            self.last_val_losses.append(validate_loss * self.validate_penalty)
-            for i in range(len(names)):
-                val = None
-                if torch.cuda.device_count() > 0:
-                    val = int(pred_label[i].cpu().item())
-                else:
-                    val = int(pred_label[i].item())
-                self.last_val_pred_labels[names[i]].append(val)
-            # ===== =====
-
-            # ===== TEST =====
-
-            (test_loss, pred_label, true_label, label_idx, names) = self.__train_forward(device, self.test_loader, weights, False, optimizer, loss_func)
-
-            pred_label = torch.cat(pred_label, 0)
-            true_label = torch.cat(true_label, 0)
-            names = [item for sublist in names for item in sublist]
-
-            test_accuracy = torch.sum(pred_label == true_label).type(torch.FloatTensor) / true_label.size(0)
-            self.outverbose(
-                'Epoch: ' + str(epoch) +
-                ' | Test Accuracy: ' + str(test_accuracy.item()) +
-                ' | Test Loss (NORMALIZED): ' + str(test_loss * self.test_penalty)
-            )
-            self.last_test_accs.append(test_accuracy.item())
-            self.last_test_losses.append(test_loss * self.test_penalty)
-            for i in range(len(names)):
-                val = None
-                if torch.cuda.device_count() > 0:
-                    val = int(pred_label[i].cpu().item())
-                else:
-                    val = int(pred_label[i].item())
-                self.last_test_pred_labels[names[i]].append(val)
-
-            # ===== =====
-
-            # ===== UPDATE MODEL =====
-            m_name_value_loss = "{value:.2f}"
-            m_name_value_acc = "{value:.4f}"
-            m_epoch = f"E-{epoch}"
-            m_va = f"VA-{m_name_value_acc.format(value=validate_accuracy)}"
-            m_vl = f"VL-{m_name_value_loss.format(value=validate_loss*self.validate_penalty)}"
-            m_ta = f"TA-{m_name_value_acc.format(value=test_accuracy)}"
-            m_tl = f"TL-{m_name_value_loss.format(value=test_loss*self.test_penalty)}"
-
-            filepath = os.path.join(self.out_model, f"{m_epoch}_{m_va}_{m_vl}_{m_ta}_{m_tl}.pt")
-            torch.save(self.architecture.state_dict(), filepath)
-
-            if validate_accuracy > best_accuracy:
-                best_accuracy = validate_accuracy
-
-            self.update_training_diagram()
-            self.update_csv_data()
-            self.architecture.train()
-            # ===== =====
+        filepath = os.path.join(self.out_model, f"{m_epoch}_{m_va}_{m_vl}_{m_ta}_{m_tl}.pt")
+        torch.save(self.architecture.state_dict(), filepath)
 
     def update_training_diagram(self):
         out_acc = self.out_evaldata + "_acc.jpeg"
@@ -494,7 +347,7 @@ class UVANEMO():
 
         df.to_csv(filename, sep=",")
 
-    def update_csv_data(self):
+    def update_csv_lossacc_data(self):
         out_acc = self.out_evaldata + "_acc.csv"
         out_loss = self.out_evaldata + "_loss.csv"
 
@@ -516,7 +369,7 @@ class UVANEMO():
         df.columns = ['Epoch', 'Accuracy Train', 'Accuracy Validate', 'Accuracy Test']
         df.to_csv(out_acc, index=False, sep=",")
 
-
+    def update_csv_labels_data(self):
         out_labels_train = self.out_evaldata + "_train_labels.csv"
         out_labels_val = self.out_evaldata + "_val_labels.csv"
         out_labels_test = self.out_evaldata + "_test_labels.csv"
@@ -531,3 +384,310 @@ class UVANEMO():
         self.__update_csv_labels(out_labels_train, self.last_train_pred_labels, self.last_train_true_labels)
         self.__update_csv_labels(out_labels_val, self.last_val_pred_labels, self.last_val_true_labels)
         self.__update_csv_labels(out_labels_test, self.last_test_pred_labels, self.last_test_true_labels)
+
+
+    def __training_prepare(self, idx):
+        # Może CUDA?
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        cnt = torch.cuda.device_count()
+
+        if cnt > 1:
+            self.outverbose(f"use {torch.cuda.device_count()} GPUS")
+            self.architecture = nn.DataParallel(self.architecture)
+        elif cnt == 1:
+            self.outverbose(f"use one gpu")
+        self.outverbose(f"using features: {self.train_generator.feature_list}")
+        if idx is not None:
+            self.outverbose(f"using fold: {idx}")
+        self.outverbose(f"train size: {self.train_size}, validate size: {self.validate_size}, test size: {self.test_size}")
+
+        self.architecture.to(device)
+        optimizer = torch.optim.Adam(self.architecture.parameters(), lr=self.lr)
+        loss_func = (nn.BCELoss())
+
+        self.prepare_training_statistics()
+        return device,optimizer,loss_func
+
+    def __debug_params(self, optimizer, prefix):
+        file = os.path.join(self.folder_path, f"{prefix}.txt")
+
+        self.out("Optimizer state_dict:", file)
+        for var_name in optimizer.state_dict():
+            self.out(f"{var_name}: {optimizer.state_dict()[var_name]}", file)
+        self.out("\n", file)
+
+        self.out("Model params:", file)
+        for name, param in self.architecture.named_parameters():
+            self.out(f"\n{name}"
+                            f"\n{param.data}"
+                            f"\nTrainable: {param.requires_grad}"
+                            , file)
+
+        self.out("Model state_dict:", file)
+        for param_tensor in self.architecture.state_dict():
+            self.out(f"\n{param_tensor}"
+                            f"\n({self.architecture.state_dict()[param_tensor].size()})"
+                            f"\n{self.architecture.state_dict()[param_tensor]}"
+                            , file)
+
+        self.out("\n", file)
+
+
+    def __process_loader_data(self, x_video, y, s, x_df_dict, device):
+        # Obcinanie, nie kazde wideo jest tej samej dlugosci
+        index = s.min().item()
+        s = s - s.min()
+        x_video = x_video.type(torch.FloatTensor)[:, index:]
+        y = y.type(torch.FloatTensor)
+        if torch.cuda.device_count() > 0:
+            x_video = x_video.to(device)
+            y = y.to(device)
+            s = s.to(device)
+
+        keys = list(x_df_dict.keys())
+        for key in keys:
+            try:
+                x_df_dict[key].size(dim=2)
+                x_df_dict[key] = x_df_dict[key].type(torch.FloatTensor)[:, :]
+                if torch.cuda.device_count() > 0:
+                    x_df_dict[key] = x_df_dict[key].to(device)
+            except IndexError:
+                del x_df_dict[key]
+
+        return x_video, y, s, x_df_dict
+
+    def __fit(self, x, s, dynamics_features, frames_len, device):
+        pred, _ = self.architecture(x, s, dynamics_features, frames_len)
+        pred_y = (pred >= 0.5).float().to(device).data
+        return pred, pred_y
+
+    def __fit_multi(self, x, s, dynamics_features, frames_len, device):
+        pred_part, pred = self.architecture(x, s, dynamics_features, frames_len)
+        pred_y = (pred >= 0.5).float().to(device).data
+        pred_part = (pred_part >= 0.5).float().to(device).data
+        return pred, pred_part, pred_y
+
+    def __calc_loss(self, train, loss_func, pred, y, optimizer):
+        loss = loss_func(pred, y)
+
+        for W in self.architecture.parameters():
+            loss += 0.001 * W.norm(2)
+        if train:
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+        return loss.item()
+
+
+    def __calc_and_out_total_accloss(self, prefix, epoch, pred_label, true_label, loss, accs_arr, losses_arr):
+        accuracy = torch.sum(pred_label == true_label).type(torch.FloatTensor) / true_label.size(0)
+
+        self.outverbose(
+            f'Epoch: ' + str(epoch) +
+            f' | {prefix} Accuracy: ' + str(accuracy.item()) +
+            f' | {prefix} Loss: ' + str(loss)
+        )
+        accs_arr.append(accuracy.item())
+        losses_arr.append(loss)
+
+        return accuracy, loss
+
+    def __calc_total_labels(self, names, pred_label, labels_arr):
+        names = [item for sublist in names for item in sublist]
+
+        for i in range(len(names)):
+            val = None
+            if torch.cuda.device_count() > 0:
+                val = int(pred_label[i].cpu().item())
+            else:
+                val = int(pred_label[i].item())
+            labels_arr[names[i]].append(val)
+
+    def __train_forward(self, device, data_loader, train, optimizer, loss_func):
+        total_loss = 0
+
+        pred_label = []
+        true_label = []
+        label_idx = []
+        names = []
+
+        for idx, name, x_video, y, s, x_df_dict, frames_len in data_loader:
+            x_video, y, s, x_df_dict = self.__process_loader_data(x_video, y, s, x_df_dict,device)
+            pred, pred_y = self.__fit(x_video, s, x_df_dict, frames_len, device)
+
+            pred_label.append(pred_y)
+            true_label.append(y)
+            label_idx.append(idx)
+            names.append(name)
+
+            loss = self.__calc_loss(train, loss_func, pred, y, optimizer)
+            total_loss += loss
+
+        pred_label = torch.cat(pred_label, 0)
+        true_label = torch.cat(true_label, 0)
+
+        return (total_loss, pred_label, true_label, label_idx, names)
+
+    def __train_evaluate_forward(self, epoch, prefix, accs_arr, losses_arr, labels_arr, data_loader, train, device, optimizer, loss_func, loss_penalty):
+        (loss, pred_label, true_label, label_idx, names) = self.__train_forward(device, data_loader, train, optimizer, loss_func)
+        loss=loss*loss_penalty
+
+        accuracy, loss = self.__calc_and_out_total_accloss(prefix, epoch, pred_label, true_label, loss, accs_arr, losses_arr)
+        self.__calc_total_labels(names, pred_label, labels_arr)
+
+        return accuracy, loss
+
+    def train(self, idx):
+        device,optimizer,loss_func = self.__training_prepare(idx)
+
+        for epoch in range(self.epochs):
+            self.last_epochs.append(epoch)
+            # ===== TRAIN =====
+
+            train_accuracy, train_loss = self.__train_evaluate_forward(epoch, "Train",
+                                          self.last_train_accs,
+                                          self.last_train_losses,
+                                          self.last_train_pred_labels,
+                                          self.train_loader,
+                                          True, device, optimizer, loss_func, 1)
+
+            # ===== =====
+
+            self.architecture.eval()  # to samo co self.architecture.train(false)
+
+            # ===== VALIDATE =====
+
+            validate_accuracy, validate_loss = self.__train_evaluate_forward(epoch, "Validate",
+                                          self.last_val_accs,
+                                          self.last_val_losses,
+                                          self.last_val_pred_labels,
+                                          self.validate_loader,
+                                          False, device, optimizer, loss_func, self.validate_penalty)
+
+            # ===== =====
+
+            # ===== TEST =====
+
+            test_accuracy, test_loss = self.__train_evaluate_forward(epoch, "Test",
+                                          self.last_test_accs,
+                                          self.last_test_losses,
+                                          self.last_test_pred_labels,
+                                          self.test_loader,
+                                          False, device, optimizer, loss_func, self.test_penalty)
+
+            # ===== =====
+
+            # ===== UPDATE MODEL =====
+            self.save_model(epoch, validate_accuracy, validate_loss*self.validate_penalty, test_accuracy, test_loss*self.test_penalty)
+            self.update_training_diagram()
+            self.update_csv_lossacc_data()
+            self.update_csv_labels_data()
+
+            self.architecture.train()
+            # ===== =====
+
+
+    def __load_forward(self, device, data_loader, train, optimizer, loss_func):
+        total_loss = 0
+
+        pred_label = []
+        pred_label_part = []
+        true_label = []
+        label_idx = []
+        names = []
+
+        for idx, name, x_videos, y, s, x_df_dict, frames_len in data_loader:
+            x_videos, y, s, dynamics_features = self.__process_loader_data(x_videos, y, s, x_df_dict, device)
+            pred, pred_part, pred_y = self.__fit_multi(x_videos, s, x_df_dict, frames_len, device)
+
+            pred_label.append(pred_y)
+            pred_label_part.append(pred_part)
+            true_label.append(y)
+            label_idx.append(idx)
+            names.append(name)
+
+            loss = self.__calc_loss(train, loss_func, pred, y, optimizer)
+            total_loss += loss
+
+        pred_label = torch.cat(pred_label, 0)
+        true_label = torch.cat(true_label, 0)
+        pred_label_part = torch.cat(pred_label_part, 0)
+
+        return (total_loss, pred_label, pred_label_part, true_label, label_idx, names)
+
+    def __load_evaluate_forward(self, epoch, prefix, accs_arr, losses_arr, labels_arr, data_loader, train, device, optimizer, loss_func, loss_penalty):
+        (loss, pred_label, pred_label_part, true_label, label_idx, names) = self.__load_forward(device, data_loader, train, optimizer, loss_func)
+        loss = loss * loss_penalty
+
+        accuracy, loss = self.__calc_and_out_total_accloss(prefix, epoch, pred_label, true_label, loss, accs_arr, losses_arr)
+        self.__calc_total_labels(names, pred_label, labels_arr)
+
+        if self.variant == 1:
+            subarch = 0
+            for pred_label in torch.transpose(pred_label_part, 0, 1):
+                pred_label = torch.unsqueeze(pred_label, dim=1)
+
+                accuracy = torch.sum(pred_label == true_label).type(torch.FloatTensor) / true_label.size(0)
+                self.outverbose(
+                    f'   Epoch: ' + str(epoch) +
+                    f'   | Submodel: ' + str(subarch) +
+                    f'   | {prefix} Submodel Accuracy: ' + str(accuracy.item()) +
+                    f'   | {prefix} Submodel Loss: ' + str(loss)
+                )
+
+                subarch += 1
+        return accuracy, loss
+
+    def load(self):
+        device,optimizer,loss_func = self.__training_prepare(None)
+        self.__debug_params(optimizer, "verbose_model_s")
+
+        self.architecture.train()
+        for epoch in range(self.epochs):
+            self.last_epochs.append(epoch)
+
+            # ===== TRAIN =====
+
+            train_accuracy, train_loss = self.__load_evaluate_forward(epoch, "Train",
+                                          self.last_train_accs,
+                                          self.last_train_losses,
+                                          self.last_train_pred_labels,
+                                          self.train_loader,
+                                          True, device, optimizer, loss_func, 1)
+
+            # ===== =====
+
+            self.architecture.eval()  # to samo co self.architecture.train(false)
+
+            # ===== VALIDATE =====
+
+            validate_accuracy, validate_loss = self.__load_evaluate_forward(epoch, "Validate",
+                                                                             self.last_val_accs,
+                                                                             self.last_val_losses,
+                                                                             self.last_val_pred_labels,
+                                                                             self.validate_loader,
+                                                                             False, device, optimizer, loss_func, self.validate_penalty)
+
+            # ===== =====
+
+            # ===== TEST =====
+
+            test_accuracy, test_loss = self.__load_evaluate_forward(epoch, "Test",
+                                                                     self.last_test_accs,
+                                                                     self.last_test_losses,
+                                                                     self.last_test_pred_labels,
+                                                                     self.test_loader,
+                                                                     False, device, optimizer, loss_func, self.test_penalty)
+
+            # ===== =====
+
+            # ===== UPDATE MODEL =====
+            self.save_model(epoch, validate_accuracy, validate_loss*self.validate_penalty, test_accuracy, test_loss*self.test_penalty)
+            self.update_training_diagram()
+            self.update_csv_lossacc_data()
+            self.update_csv_labels_data()
+
+            self.architecture.train()
+            if epoch%10 == 0:
+                self.__debug_params(optimizer, f"verbose_model_{str(epoch)}")
+            # ===== =====

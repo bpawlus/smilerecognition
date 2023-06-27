@@ -8,6 +8,9 @@ from constants import valuesdict
 
 parser = argparse.ArgumentParser(description='RealSmileNet training')
 
+parser.add_argument('--usage', default='Train', choices=('Train','Load','Concat'),
+                    help='train - perform training, load - load trained model, concat - combine models')
+
 parser.add_argument('--batch_size_train', default = valuesdict["batch_size_train"], type=int,
                     help='the mini batch size used for training')
 parser.add_argument('--batch_size_valtest', default = valuesdict["batch_size_valtest"], type=int,
@@ -29,7 +32,7 @@ parser.add_argument('--features_path', default = dirsdict["features_zip_dir"], t
 parser.add_argument('--vgg_path', default = dirsdict["vgg_zip_dir"], type=str,
                     help='the path contains processed vgg features')
 
-parser.add_argument('-f', nargs='+', required=True, type=list, default=["videos"],
+parser.add_argument('-f', nargs='+', type=list, default=["videos"],
                     help='list of features for model creation.')
 parser.add_argument('--frequency', default = valuesdict["frequency"], type=int,
                     help='the frequency used to sample the data')
@@ -38,57 +41,87 @@ parser.add_argument('--epochs', default=valuesdict["epochs"], type=int,
 parser.add_argument('--lr', '--learning-rate', default=valuesdict["learning_rate"], type=float,
                     help='learning rate')
 
-parser.add_argument('--models_dir', default=dirsdict["trained_dir"], type=str,
-                    help='directory for all trained models')
+parser.add_argument('--models_dir', default=dirsdict["train_dir"], type=str,
+                    help='directory for models that will be trained')
+parser.add_argument('--models_state_dir', default=dirsdict["load_dir"], type=str,
+                    help='directory with model parameters that will be loaded')
 
+parser.add_argument('-ignore', nargs='+', type=list, default=["videos"],
+                    help='ignore list of features for concatenation model creation.')
+parser.add_argument('--v', '--variants', default=valuesdict["learning_rate"], type=float,
+                    help='learning rate')
 parser.add_argument('--calcminmax_features', default=False, type=str,
                     help='calculate min, max and avg for extracted features')
 
 
 
 def main():
-    fs = [["aus"], ["videos"], ["si"], ["d1da27"], ["d2da27"], ['videos', 'aus', 'si', 'd1da27']]
+    #fs = [["auwise"], ["crossau"]]
+    epochs = [35, 35]
+    lrs = [1e-4, 1e-3]
+    variants = [2, 1]
 
-    for f in fs:
+    for i in range(len(variants)):
+    #for i in range(len(fs)):
         args = parser.parse_args()
-
         date = datetime.datetime.now()
         date = date.strftime("%Y-%m-%d_%H-%M")
         args.models_dir = os.path.join(args.models_dir, date)
+
         try:
             shutil.rmtree(args.models_dir)
             os.makedirs(args.models_dir)
         except FileNotFoundError:
             os.makedirs(args.models_dir)
 
-        #f = ["".join(feature) for feature in args.f]
-        uvanemo = net.UVANEMO(
-            args.epochs,
-            args.lr,
-            args.label_path,
-            args.folds_path,
-            args.folds_orig_path,
-            args.frame_path,
-            args.frequency,
-            args.features_path,
-            args.vgg_path,
-            args.batch_size_train,
-            args.batch_size_valtest,
-            args.models_dir,
-            args.calcminmax_features,
-            f
-        )
+        if args.usage == "Train":
+            #args.epochs = epochs[i]
+            #f = fs[i]
 
-        k = 9
-        if args.split_first == 'True':
-            k = 10
-            uvanemo.split(k)
-        elif args.split_first == "Orig":
+            f = ["".join(feature) for feature in args.f]
+
+            uvanemo = net.UVANEMO(
+                args.epochs,
+                args.lr,
+                args.folds_path,
+                args.frame_path,
+                args.frequency,
+                args.features_path,
+                args.vgg_path,
+                args.batch_size_train,
+                args.batch_size_valtest,
+                args.calcminmax_features
+            )
+
             k = 9
-            uvanemo.split_orig(10)
+            if args.split_first == "Orig":
+                uvanemo.split_orig(10, args.folds_orig_path, args.folds_path)
 
-        for i in range(k):
-            uvanemo.prepareData(str(i+1))
-            uvanemo.train(str(i+1))
+            for i in range(k):
+                uvanemo.prepare_data_training(str(i+1), args.models_dir, f)
+                uvanemo.train(str(i+1))
+        elif args.usage == "Load":
+            args.lr = lrs[i]
+            args.epochs = epochs[i]
+            args.v = variants[i]
+
+            ignore = ["".join(i) for i in args.ignore]
+            uvanemo = net.UVANEMO(
+                args.epochs,
+                args.lr,
+                args.folds_path,
+                args.frame_path,
+                args.frequency,
+                args.features_path,
+                args.vgg_path,
+                args.batch_size_train,
+                args.batch_size_valtest,
+                args.calcminmax_features
+            )
+
+            k = 9
+            for i in range(k):
+                uvanemo.prepare_data_load(str(i+1), args.models_dir, args.models_state_dir, args.v, ignore)
+                uvanemo.load()
 
 main()

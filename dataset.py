@@ -17,6 +17,9 @@ def read_au_txt(zip,name):
 def read_si_txt(zip,name):
     return pd.read_csv(io.BytesIO(zip.read(name)), sep="\n", header=None)
 
+def read_auwise_txt(zip,name):
+    return pd.read_csv(io.BytesIO(zip.read(name)), sep=",", header=None)
+
 
 
 def load_frames(videos_data_names, videos_data, name, videos_frequency, video_max_len):
@@ -50,9 +53,8 @@ def load_frames(videos_data_names, videos_data, name, videos_frequency, video_ma
 
     return pad_x, frame_count
 
-def load_features_si(features_data_names, features_data, name, videos_frequency, video_max_len, video_len):
-    files = features_data_names[name]
-    pd = read_si_txt(features_data, files["smile_intensities"])
+def load_features_si(files, features_data, key, videos_frequency, video_max_len):
+    pd = read_si_txt(features_data, files[key])
 
     pad_x = np.zeros((video_max_len, 1))
 
@@ -68,9 +70,8 @@ def load_features_si(features_data_names, features_data, name, videos_frequency,
 
     return pad_x, frame_count
 
-def load_features_aus(features_data_names, features_data, name, videos_frequency, video_max_len, video_len):
-    files = features_data_names[name]
-    pd = read_au_txt(features_data, files["action_units"])
+def load_features_aus(files, features_data, aus_feature_name, videos_frequency, sigmoid_mul, sigmoid_add, video_max_len):
+    pd = read_au_txt(features_data, files[aus_feature_name])
     columns = sorted(pd.columns.values.tolist())
 
     pad_x = np.zeros((video_max_len, len(columns)))
@@ -81,29 +82,34 @@ def load_features_aus(features_data_names, features_data, name, videos_frequency
     frame_count = len(values[0])
 
     x = np.array(values).transpose()
-    x = 1/(1+np.exp(-(x-0.75))) # Translacja elementów (natężenia action unitów) - zawierają wysokie wartości ujemne i wysokie dodatnie - do tensorów warto zastosować moim zdaniem sigmoid
-    # -0.75 - średnia z action_units
+    x = 1/(1 + np.exp(-(x * sigmoid_mul + sigmoid_add))) # Translacja elementów (dynamiki natężenia action unitów) - zawierają niskie wartości ujemne i wysokie dodatnie - do tensorów warto zastosować moim zdaniem sigmoid
     pad_x[0:frame_count] = x
 
     return pad_x, frame_count
 
-def load_features_dynamics(features_data_names, features_data, name, dynamics_subfeature_name, dynamics_subfeature_mul, videos_frequency, video_max_len, video_len):
-    files = features_data_names[name]
-    pd = read_au_txt(features_data, files[dynamics_subfeature_name])
-    columns = sorted(pd.columns.values.tolist())
+def load_features_auwise(files, features_data, sigmoid_mul, sigmoid_add):
+    x = []
+    for auwise_feature in ["AU-wise_apex", "AU-wise_offset", "AU-wise_onset", "AU-wise_whole_sequence", "AU-wise_whole_smile"]:
+        pd = read_auwise_txt(features_data, files[auwise_feature])
 
-    pad_x = np.zeros((video_max_len, len(columns)))
+        values = pd.values[0]
+        x.append(values)
 
-    last = [files[-1]] if len(files) % videos_frequency >= 2 / 3 * videos_frequency else []
-    start = 0
-    values = [np.concatenate([pd[i].values[start::videos_frequency], last]) for i in columns]
-    frame_count = len(values[0])
+    x = np.array(x)
+    x = 1/(1 + np.exp(-(x * sigmoid_mul + sigmoid_add)))
+    return x
 
-    x = np.array(values).transpose()
-    x = 1/(1 + np.exp(-(x * dynamics_subfeature_mul))) # Translacja elementów (dynamiki natężenia action unitów) - zawierają niskie wartości ujemne i wysokie dodatnie - do tensorów warto zastosować moim zdaniem sigmoid
-    pad_x[0:frame_count] = x
+def load_features_crossau(files, features_data):
+    x = []
+    for auwise_feature in ["cross-AU_apex", "cross-AU_offset", "cross-AU_onset", "cross-AU_whole_sequence", "cross-AU_whole_smile"]:
+        pd = read_auwise_txt(features_data, files[auwise_feature])
 
-    return pad_x, frame_count
+        values = pd.values[0]
+        x.append(values)
+
+    x = np.array(x)
+    x = np.tanh(x)
+    return x
 
 def videos_zip_to_dict(data):
     data_name = dict()
@@ -145,13 +151,24 @@ def features_zip_to_dict(data, calcminmax_features):
             if(calcminmax_features):
                 pddata = pd.read_csv(io.BytesIO(data.read(file)))
                 pddata_values = pddata.values
-                (minval, meanval, maxval) = (pddata_values.min(), pddata_values.mean(), pddata_values.max())
+                (minval, meanval, maxval, varval, totalval) = (pddata_values.min(), pddata_values.mean(), pddata_values.max(), pddata_values.var(), pddata_values.size)
 
                 if feature_name in minmax_name:
-                    (prev_minval, prev_meanval, prev_maxval, meancnt) = minmax_name[feature_name]
-                    minmax_name[feature_name] = (min(prev_minval, minval), (prev_meanval*meancnt+meanval)/(meancnt+1), max(prev_maxval, maxval), meancnt+1)
+                    (prev_minval, prev_meanval, prev_maxval, prev_varval, meancnt, prev_totalval) = minmax_name[feature_name]
+
+                    new_minval = min(prev_minval, minval)
+                    new_maxval = max(prev_maxval, maxval)
+                    new_total = prev_totalval + totalval
+
+                    new_meanval = (prev_totalval * prev_meanval + totalval * meanval) / new_total
+
+                    mean_of_var = (prev_totalval * prev_varval + totalval * varval) / new_total
+                    var_of_means = (prev_totalval * (prev_meanval - new_meanval) ** 2 + totalval * (meanval - new_meanval) ** 2) / new_total
+                    new_varval = mean_of_var + var_of_means #https://math.stackexchange.com/a/4567292
+
+                    minmax_name[feature_name] = (new_minval, new_meanval, new_maxval, new_varval, meancnt+1, new_total)
                 else:
-                    minmax_name[feature_name] = (minval, meanval, maxval, 1)
+                    minmax_name[feature_name] = (minval, meanval, maxval, varval, 1, totalval)
 
             data_name[name][feature_name] = file
         else:
@@ -170,15 +187,26 @@ def features_zip_to_dict(data, calcminmax_features):
                 data_name[name] = dict()
 
             if(calcminmax_features):
-                pddata = pd.read_csv(io.BytesIO(data.read(file)), sep=",", header=None)
+                pddata = pd.read_csv(io.BytesIO(data.read(file)), sep=",|\\n", header=None)
                 pddata_values = pddata.values
-                (minval, meanval, maxval) = (pddata_values.min(), pddata_values.mean(), pddata_values.max())
+                (minval, meanval, maxval, varval, totalval) = (pddata_values.min(), pddata_values.mean(), pddata_values.max(), pddata_values.var(), pddata_values.size)
 
                 if subfeature in minmax_name:
-                    (prev_minval, prev_meanval, prev_maxval, meancnt) = minmax_name[subfeature]
-                    minmax_name[subfeature] = (min(prev_minval, minval), (prev_meanval*meancnt+meanval)/(meancnt+1), max(prev_maxval, maxval), meancnt+1)
+                    (prev_minval, prev_meanval, prev_maxval, prev_varval, meancnt, prev_totalval) = minmax_name[subfeature]
+
+                    new_minval = min(prev_minval, minval)
+                    new_maxval = max(prev_maxval, maxval)
+                    new_total = prev_totalval + totalval
+
+                    new_meanval = (prev_totalval * prev_meanval + totalval * meanval) / new_total
+
+                    mean_of_var = (prev_totalval * prev_varval + totalval * varval) / new_total
+                    var_of_means = (prev_totalval * (prev_meanval - new_meanval) ** 2 + totalval * (meanval - new_meanval) ** 2) / new_total
+                    new_varval = mean_of_var + var_of_means  # https://math.stackexchange.com/a/4567292
+
+                    minmax_name[subfeature] = (new_minval, new_meanval, new_maxval, new_varval, meancnt + 1, new_total)
                 else:
-                    minmax_name[subfeature] = (minval, meanval, maxval, 1)
+                    minmax_name[subfeature] = (minval, meanval, maxval, varval, 1, totalval)
 
             data_name[name][subfeature] = file
 
@@ -256,17 +284,57 @@ class UVANEMODataGenerator(torch.utils.data.Dataset):
         frames_len = 0
 
         if "aus" in self.feature_list:
-            tensors, frames_len = load_features_aus(self.features_data_names, self.features_data, name, self.videos_frequency, self.video_max_len, video_len)
-            dynamics_tensors.update({"action_units": tensors})
+            key = "action_units"
+            tensors, frames_len = load_features_aus(self.features_data_names[name], self.features_data, key, self.videos_frequency, 1, -0.75, self.video_max_len)
+            dynamics_tensors.update({key: tensors})
         if "si" in self.feature_list:
-            tensors, frames_len = load_features_si(self.features_data_names, self.features_data, name, self.videos_frequency, self.video_max_len, video_len)
-            dynamics_tensors.update({"smile_intensities": tensors})
-        if "d1da27" in self.feature_list:
-            key = "dynamics_delta_adjusted_27"
-            tensors, frames_len = load_features_dynamics(self.features_data_names, self.features_data, name, key, 150, self.videos_frequency, self.video_max_len, video_len)
+            key = "smile_intensities"
+            tensors, frames_len = load_features_si(self.features_data_names[name], self.features_data, key, self.videos_frequency, self.video_max_len)
+            dynamics_tensors.update({key: tensors})
+
+        if "d2d27" in self.feature_list:
+            key = "dynamics_2nd_delta_27"
+            tensors, frames_len = load_features_aus(self.features_data_names[name], self.features_data, key, self.videos_frequency, 100, 0, self.video_max_len)
+            dynamics_tensors.update({key: tensors})
+        if "d2d9" in self.feature_list:
+            key = "dynamics_2nd_delta_9"
+            tensors, frames_len = load_features_aus(self.features_data_names[name], self.features_data, key, self.videos_frequency, 10, 0, self.video_max_len)
             dynamics_tensors.update({key: tensors})
         if "d2da27" in self.feature_list:
-            key = "dynamics_2nd_delta_adjusted_27"
-            tensors, frames_len = load_features_dynamics(self.features_data_names, self.features_data, name, key, 100, self.videos_frequency, self.video_max_len, video_len)
+            key = "dynamics_2nd_delta_adjusted_27" #fixed
+            tensors, frames_len = load_features_aus(self.features_data_names[name], self.features_data, key, self.videos_frequency, 100, 0, self.video_max_len)
             dynamics_tensors.update({key: tensors})
+        if "d2da9" in self.feature_list:
+            key = "dynamics_2nd_delta_adjusted_9"
+            tensors, frames_len = load_features_aus(self.features_data_names[name], self.features_data, key, self.videos_frequency, 10, 0, self.video_max_len)
+            dynamics_tensors.update({key: tensors})
+
+        if "d1d27" in self.feature_list:
+            key = "dynamics_delta_27"
+            tensors, frames_len = load_features_aus(self.features_data_names[name], self.features_data, key, self.videos_frequency, 5, 0, self.video_max_len)
+            dynamics_tensors.update({key: tensors})
+        if "d1d9" in self.feature_list:
+            key = "dynamics_delta_9"
+            tensors, frames_len = load_features_aus(self.features_data_names[name], self.features_data, key, self.videos_frequency, 3, 0, self.video_max_len)
+            dynamics_tensors.update({key: tensors})
+        if "d1da27" in self.feature_list:
+            key = "dynamics_delta_adjusted_27" #fixed
+            tensors, frames_len = load_features_aus(self.features_data_names[name], self.features_data, key, self.videos_frequency, 5, 0, self.video_max_len)
+            dynamics_tensors.update({key: tensors})
+        if "d1da9" in self.feature_list:
+            key = "dynamics_delta_adjusted_9"
+            tensors, frames_len = load_features_aus(self.features_data_names[name], self.features_data, key, self.videos_frequency, 3, 0, self.video_max_len)
+            dynamics_tensors.update({key: tensors})
+
+
+        if "auwise" in self.feature_list:
+            key = "auwise"
+            tensors = load_features_auwise(self.features_data_names[name], self.features_data, 1, -0.5)
+            dynamics_tensors.update({key: tensors})
+        if "crossau" in self.feature_list:
+            key = "crossau"
+            tensors = load_features_crossau(self.features_data_names[name], self.features_data)
+            dynamics_tensors.update({key: tensors})
+
+
         return idx, name, frames_tensors_scaled, y, video_len, dynamics_tensors, frames_len
