@@ -549,8 +549,8 @@ class MultipleDeepSmileNet(nn.Module):
                 preds.append(pred)
             elif self.variant == 2:
                 preds.append(pred_pre_class)
-        preds_cat = torch.cat(preds, dim=1)
+        cat_all = torch.cat(preds, dim=1)
 
-        cat_all = self.Classification(preds_cat)
+        cat_all = self.Classification(cat_all)
 
-        return preds_cat, cat_all
+        return cat_all

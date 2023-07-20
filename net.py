@@ -55,8 +55,8 @@ class UVANEMO():
         else:
             return -1
 
-    def split_orig(self, test_fold, label_path, folds_path):
-        for i in range(9):
+    def split_orig(self, label_path, folds_path):
+        for i in range(10):
             try:
                 shutil.rmtree(os.path.join(folds_path, str(i + 1)))
                 os.makedirs(os.path.join(folds_path, str(i + 1)))
@@ -68,9 +68,14 @@ class UVANEMO():
             fold_test_labels = dict()
 
             train_folds = [i+1 for i in range(10)]
+
+            validate_fold = train_folds[i%10]
+            test_fold = train_folds[(i+1)%10]
+
             train_folds.remove(test_fold)
-            validate_fold = train_folds[i]
             train_folds.remove(validate_fold)
+
+            print(f"  {train_folds} {validate_fold} {test_fold}")
 
             for f in train_folds:
                 for ps in ["P", "S"]:
@@ -385,7 +390,6 @@ class UVANEMO():
         self.__update_csv_labels(out_labels_val, self.last_val_pred_labels, self.last_val_true_labels)
         self.__update_csv_labels(out_labels_test, self.last_test_pred_labels, self.last_test_true_labels)
 
-
     def __training_prepare(self, idx):
         # Może CUDA?
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -397,6 +401,7 @@ class UVANEMO():
         elif cnt == 1:
             self.outverbose(f"use one gpu")
         self.outverbose(f"using features: {self.train_generator.feature_list}")
+        self.outverbose(f"using lr: {self.lr}")
         if idx is not None:
             self.outverbose(f"using fold: {idx}")
         self.outverbose(f"train size: {self.train_size}, validate size: {self.validate_size}, test size: {self.test_size}")
@@ -457,15 +462,9 @@ class UVANEMO():
         return x_video, y, s, x_df_dict
 
     def __fit(self, x, s, dynamics_features, frames_len, device):
-        pred, _ = self.architecture(x, s, dynamics_features, frames_len)
+        pred = self.architecture(x, s, dynamics_features, frames_len)
         pred_y = (pred >= 0.5).float().to(device).data
         return pred, pred_y
-
-    def __fit_multi(self, x, s, dynamics_features, frames_len, device):
-        pred_part, pred = self.architecture(x, s, dynamics_features, frames_len)
-        pred_y = (pred >= 0.5).float().to(device).data
-        pred_part = (pred_part >= 0.5).float().to(device).data
-        return pred, pred_part, pred_y
 
     def __calc_loss(self, train, loss_func, pred, y, optimizer):
         loss = loss_func(pred, y)
@@ -591,17 +590,15 @@ class UVANEMO():
         total_loss = 0
 
         pred_label = []
-        pred_label_part = []
         true_label = []
         label_idx = []
         names = []
 
         for idx, name, x_videos, y, s, x_df_dict, frames_len in data_loader:
             x_videos, y, s, dynamics_features = self.__process_loader_data(x_videos, y, s, x_df_dict, device)
-            pred, pred_part, pred_y = self.__fit_multi(x_videos, s, x_df_dict, frames_len, device)
+            pred, predy = self.__fit(x_videos, s, x_df_dict, frames_len, device)
 
-            pred_label.append(pred_y)
-            pred_label_part.append(pred_part)
+            pred_label.append(predy)
             true_label.append(y)
             label_idx.append(idx)
             names.append(name)
@@ -611,35 +608,20 @@ class UVANEMO():
 
         pred_label = torch.cat(pred_label, 0)
         true_label = torch.cat(true_label, 0)
-        pred_label_part = torch.cat(pred_label_part, 0)
 
-        return (total_loss, pred_label, pred_label_part, true_label, label_idx, names)
+        return (total_loss, pred_label, true_label, label_idx, names)
 
     def __load_evaluate_forward(self, epoch, prefix, accs_arr, losses_arr, labels_arr, data_loader, train, device, optimizer, loss_func, loss_penalty):
-        (loss, pred_label, pred_label_part, true_label, label_idx, names) = self.__load_forward(device, data_loader, train, optimizer, loss_func)
+        (loss, pred_label, true_label, label_idx, names) = self.__load_forward(device, data_loader, train, optimizer, loss_func)
         loss = loss * loss_penalty
 
         accuracy, loss = self.__calc_and_out_total_accloss(prefix, epoch, pred_label, true_label, loss, accs_arr, losses_arr)
         self.__calc_total_labels(names, pred_label, labels_arr)
 
-        if self.variant == 1:
-            subarch = 0
-            for pred_label in torch.transpose(pred_label_part, 0, 1):
-                pred_label = torch.unsqueeze(pred_label, dim=1)
-
-                accuracy = torch.sum(pred_label == true_label).type(torch.FloatTensor) / true_label.size(0)
-                self.outverbose(
-                    f'   Epoch: ' + str(epoch) +
-                    f'   | Submodel: ' + str(subarch) +
-                    f'   | {prefix} Submodel Accuracy: ' + str(accuracy.item()) +
-                    f'   | {prefix} Submodel Loss: ' + str(loss)
-                )
-
-                subarch += 1
         return accuracy, loss
 
-    def load(self):
-        device,optimizer,loss_func = self.__training_prepare(None)
+    def load(self, idx):
+        device,optimizer,loss_func = self.__training_prepare(idx)
         self.__debug_params(optimizer, "verbose_model_s")
 
         self.architecture.train()

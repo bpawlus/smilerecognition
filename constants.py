@@ -20,8 +20,11 @@ valuesdict = {
     "learning_rate": 1e-3
 }
 
-#1e-4 - crossau, auwise
-#3e-5 - aus-like
-#1e-3 - videos,
-#2e-3 - concat type 1
-#5e-5 - concat type 2
+#1e-4 - auwise
+#4e-5 - aus
+#2e-5 - delta adj
+#2e-4 - si
+#7e-4 - videos,
+#5e-3 - concat type 1
+#7e-5 - concat type 2
+#5e-5 - crossau

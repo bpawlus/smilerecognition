@@ -56,72 +56,85 @@ parser.add_argument('--calcminmax_features', default=False, type=str,
 
 
 def main():
-    #fs = [["auwise"], ["crossau"]]
+    """
+    fs = [["d1d9"]]
+
+    epochs = [70]
+
+    lrs = [2e-5]
+    """
+
+    variants = [1, 2]
+
     epochs = [35, 35]
-    lrs = [1e-4, 1e-3]
-    variants = [2, 1]
 
-    for i in range(len(variants)):
-    #for i in range(len(fs)):
-        args = parser.parse_args()
-        date = datetime.datetime.now()
-        date = date.strftime("%Y-%m-%d_%H-%M")
-        args.models_dir = os.path.join(args.models_dir, date)
+    lrs = [5e-3, 7e-5]
 
-        try:
-            shutil.rmtree(args.models_dir)
-            os.makedirs(args.models_dir)
-        except FileNotFoundError:
-            os.makedirs(args.models_dir)
+    k = 10
+    for fold in range(k):
+        for i in range(len(variants)):
+        #for i in range(len(fs)):
+            args = parser.parse_args()
+            date = datetime.datetime.now()
+            date = date.strftime("%Y-%m-%d_%H-%M")
+            args.models_dir = os.path.join(args.models_dir, date)
 
-        if args.usage == "Train":
-            #args.epochs = epochs[i]
-            #f = fs[i]
+            try:
+                shutil.rmtree(args.models_dir)
+                os.makedirs(args.models_dir)
+            except FileNotFoundError:
+                os.makedirs(args.models_dir)
 
-            f = ["".join(feature) for feature in args.f]
+            if args.usage == "Train":
+                #args.epochs = epochs[i]
+                #args.f = fs[i]
+                #args.lr = lrs[i]
+                #rgs.epochs = epochs[i]
 
-            uvanemo = net.UVANEMO(
-                args.epochs,
-                args.lr,
-                args.folds_path,
-                args.frame_path,
-                args.frequency,
-                args.features_path,
-                args.vgg_path,
-                args.batch_size_train,
-                args.batch_size_valtest,
-                args.calcminmax_features
-            )
+                f = ["".join(feature) for feature in args.f]
 
-            k = 9
-            if args.split_first == "Orig":
-                uvanemo.split_orig(10, args.folds_orig_path, args.folds_path)
+                uvanemo = net.UVANEMO(
+                    args.epochs,
+                    args.lr,
+                    args.folds_path,
+                    args.frame_path,
+                    args.frequency,
+                    args.features_path,
+                    args.vgg_path,
+                    args.batch_size_train,
+                    args.batch_size_valtest,
+                    args.calcminmax_features
+                )
 
-            for i in range(k):
-                uvanemo.prepare_data_training(str(i+1), args.models_dir, f)
-                uvanemo.train(str(i+1))
-        elif args.usage == "Load":
-            args.lr = lrs[i]
-            args.epochs = epochs[i]
-            args.v = variants[i]
+                k = 10
+                if args.split_first == "Orig":
+                    uvanemo.split_orig(args.folds_orig_path, args.folds_path)
 
-            ignore = ["".join(i) for i in args.ignore]
-            uvanemo = net.UVANEMO(
-                args.epochs,
-                args.lr,
-                args.folds_path,
-                args.frame_path,
-                args.frequency,
-                args.features_path,
-                args.vgg_path,
-                args.batch_size_train,
-                args.batch_size_valtest,
-                args.calcminmax_features
-            )
+                for fold in range(k):
+                    uvanemo.prepare_data_training(str(fold+1), args.models_dir, f)
+                    uvanemo.train(str(fold+1))
+            elif args.usage == "Load":
+                args.lr = lrs[i]
+                args.epochs = epochs[i]
+                args.v = variants[i]
 
-            k = 9
-            for i in range(k):
-                uvanemo.prepare_data_load(str(i+1), args.models_dir, args.models_state_dir, args.v, ignore)
-                uvanemo.load()
+                ignore = ["".join(i) for i in args.ignore]
+                uvanemo = net.UVANEMO(
+                    args.epochs,
+                    args.lr,
+                    args.folds_path,
+                    args.frame_path,
+                    args.frequency,
+                    args.features_path,
+                    args.vgg_path,
+                    args.batch_size_train,
+                    args.batch_size_valtest,
+                    args.calcminmax_features
+                )
+
+            #k = 10
+            #for fold in range(k):
+                uvanemo.prepare_data_load(str(fold+1), args.models_dir, args.models_state_dir, args.v, ignore)
+                uvanemo.load(str(fold+1))
 
 main()
