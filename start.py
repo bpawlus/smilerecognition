@@ -44,15 +44,15 @@ parser.add_argument('--multi_dir', default=dirsdict["multi_dir"], type=str,
 
 parser.add_argument('-ignore', nargs='+', type=list, default=["videos"],
                     help='ignore list of submodel features for concatenation model creation.')
-parser.add_argument('--v', '--variants', default=valuesdict["learning_rate"], type=int,
+parser.add_argument('--v', '--variants', default=1, type=int,
                     help='concatenation variant')
 parser.add_argument('--calcminmax_features', default=False, type=str,
-                    help='calculate min, max and avg for extracted features')
+                    help='calculate min, max and avg for extracted features (use only in debug mode)')
 
 
 
 def main():
-    """Starts process of single and concatenation models training and validation"""
+    """Starts training and validation processes of single and concatenation models """
     k = 10
     for fold in range(1):
             args = parser.parse_args()

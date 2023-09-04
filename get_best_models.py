@@ -13,7 +13,7 @@ parser.add_argument('--save', default = "", type=str,
                     help='results directory')
 
 def main():
-    """Summarizes trained single models and outputs saved parameters for best single models"""
+    """Summarizes trained models and outputs saved parameters for best models"""
     args = parser.parse_args()
 
     val_accs = {}

@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser(description='Split true labels to spontaneus an
 parser.add_argument('--d', default = "", type=str, help='subdir')
 
 def main():
-    """In single trained single models splits predicted labels between spontaneus and deliberate ones"""
+    """Splits predicted labels between spontaneus and deliberate ones"""
     args = parser.parse_args()
 
     dir = dirsdict["single_dir"]

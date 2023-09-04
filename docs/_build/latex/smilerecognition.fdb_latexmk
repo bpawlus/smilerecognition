@@ -1,11 +1,11 @@
 # Fdb version 4
-["makeindex smilerecognition.idx"] 1693604276 "smilerecognition.idx" "smilerecognition.ind" "smilerecognition" 1693604280 0
-  "smilerecognition.idx" 1693604279 17789 8f067fc966d24c5a2673b2a152539b32 "pdflatex"
+["makeindex smilerecognition.idx"] 1693604276 "smilerecognition.idx" "smilerecognition.ind" "smilerecognition" 1693794805 0
+  "smilerecognition.idx" 1693794805 17789 8f067fc966d24c5a2673b2a152539b32 "pdflatex"
   (generated)
   "smilerecognition.ilg"
   "smilerecognition.ind"
   (rewritten before read)
-["pdflatex"] 1693604278 "smilerecognition.tex" "smilerecognition.pdf" "smilerecognition" 1693604280 0
+["pdflatex"] 1693794803 "smilerecognition.tex" "smilerecognition.pdf" "smilerecognition" 1693794805 0
   "C:/Program Files/MiKTeX/fonts/enc/dvips/tex-gyre/q-ec.enc" 1525740614 2457 aaabbccba4df2a7f7371410ee4e075a3 ""
   "C:/Program Files/MiKTeX/fonts/enc/dvips/tex-gyre/q-ts1.enc" 1525740614 3124 3813fd4c981d99822890a2861b0d274c ""
   "C:/Program Files/MiKTeX/fonts/tfm/jknappen/ec/ecrm1000.tfm" 993062122 3148 7e594c8240c71e432203f65ab5f95a51 ""
@@ -147,13 +147,13 @@
   "C:/Program Files/MiKTeX/tex/latex/xcolor/xcolor.sty" 1656236890 56148 51a9a8571c07b9921892ae11063ae853 ""
   "C:/ProgramData/MiKTeX/fonts/map/pdftex/pdftex.map" 1693604270 123072 4dfec00f36c42e8f2db702e61ef5862a ""
   "C:/Users/Benio/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1693598382 23169144 c1964c42a376bfbf48b40b6c6d156988 ""
-  "smilerecognition.aux" 1693604279 14982 e81b83e8752077f6302a6901e5f556bd "pdflatex"
+  "smilerecognition.aux" 1693794805 14982 e81b83e8752077f6302a6901e5f556bd "pdflatex"
   "smilerecognition.ind" 1693604276 12476 53678b5c69fe0e879cfdbe354c4b20e4 "makeindex smilerecognition.idx"
-  "smilerecognition.out" 1693604279 1625 f9a362c45fb833a6462e29f7cc96c389 "pdflatex"
-  "smilerecognition.tex" 1693604240 106863 fa1d407950d7e67e7804c16fc43664d2 ""
-  "smilerecognition.toc" 1693604279 914 8a9446b2d74b57266c496269af1b70fd "pdflatex"
+  "smilerecognition.out" 1693794805 1625 f9a362c45fb833a6462e29f7cc96c389 "pdflatex"
+  "smilerecognition.tex" 1693794803 107121 3aabef738b878cf7cd2de88a0be30458 ""
+  "smilerecognition.toc" 1693794805 914 8a9446b2d74b57266c496269af1b70fd "pdflatex"
   "sphinx.sty" 1693424485 44560 f9fbf51072c954d129c9bd5284cc4ccf ""
-  "sphinxhighlight.sty" 1693604239 7683 83fb52292c17957d9f4aadcb28c57a87 ""
+  "sphinxhighlight.sty" 1693794803 7683 83fb52292c17957d9f4aadcb28c57a87 ""
   "sphinxlatexadmonitions.sty" 1693424485 10989 c38302e64c2bb47779f086869b246760 ""
   "sphinxlatexcontainers.sty" 1693424485 901 d3a3a1b7b2547f47ade2499350b5c420 ""
   "sphinxlatexgraphics.sty" 1693424485 4840 a9578332b6f3b35e198751fb632c9b79 ""
@@ -168,7 +168,7 @@
   "sphinxlatexstyletext.sty" 1693424485 8589 a7e8f95eb4fef6c1cd2623cd417d6467 ""
   "sphinxlatextables.sty" 1693424485 57830 16f2773b765508003aec5d08680f39b9 ""
   "sphinxmanual.cls" 1693424485 4241 7b0d7a37df7b5715fb0dbd585c52ecdb ""
-  "sphinxmessages.sty" 1693604240 765 3f5fcd6cdd7964ed608767954a8ced6f ""
+  "sphinxmessages.sty" 1693794803 765 3f5fcd6cdd7964ed608767954a8ced6f ""
   "sphinxoptionsgeometry.sty" 1693424485 2061 47bb34b8ed8a78823eb0c886abfb9f4d ""
   "sphinxoptionshyperref.sty" 1693424485 1094 79beb8b8a3f10784f8cce804e0f9d3aa ""
   "sphinxpackageboxes.sty" 1693424485 36615 1d74c63e665ede6c648fa08c42ea70fb ""

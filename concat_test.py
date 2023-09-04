@@ -10,10 +10,10 @@ parser = argparse.ArgumentParser(description='Get best pretrained models')
 parser.add_argument('--save', default = "", type=str,
                     help='results directory')
 parser.add_argument('-f', nargs='+', type=list, default=["videos"],
-                    help='starting features')
+                    help='starting model')
 
 def main():
-    """Performs calculation of best models to concatenate with starting features"""
+    """Performs calculation of best models to concatenate with starting model"""
     args = parser.parse_args()
     args.f = ["".join(feature) for feature in args.f]
     file_dir = os.path.join(args.save, f"model_val_labels.csv")
