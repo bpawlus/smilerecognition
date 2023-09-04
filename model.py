@@ -3,8 +3,11 @@ from torch import nn
 from torch.nn.utils.rnn import pack_padded_sequence
 from torch.nn.utils.rnn import pad_packed_sequence
 
-# NonLocalBlock: https://github.com/AlexHex7/Non-local_pytorch/tree/master/lib
+
+
 class _NonLocalBlockND(nn.Module):
+    """PyTorch module for NonLocalBlock"""
+
     def __init__(self, in_channels, inter_channels=None, dimension=3, sub_sample=True, bn_layer=True):
         super(_NonLocalBlockND, self).__init__()
 
@@ -85,6 +88,7 @@ class _NonLocalBlockND(nn.Module):
         return z
 
 class NONLocalBlock2D(_NonLocalBlockND):
+    """PyTorch module for NonLocalBlock2D"""
     def __init__(self, in_channels, inter_channels=None, sub_sample=True, bn_layer=True):
         super(NONLocalBlock2D, self).__init__(in_channels,
                                               inter_channels=inter_channels,
@@ -94,6 +98,7 @@ class NONLocalBlock2D(_NonLocalBlockND):
 
 # CONVLSTM: https://github.com/ndrplz/ConvLSTM_pytorch/blob/master/convlstm.py
 class ConvLSTMCell(nn.Module):
+    """PyTorch module for ConvLSTM Cell"""
     def __init__(self, input_dim, hidden_dim):
         super(ConvLSTMCell, self).__init__()
 
@@ -127,6 +132,8 @@ class ConvLSTMCell(nn.Module):
                 torch.zeros(batch_size, self.hidden_dim, height, width, device=self.conv.weight.device))
 
 class ConvLSTM(nn.Module):
+    """PyTorch module for ConvLSTM"""
+
     def __init__(self, input_dim, hidden_dim):
         super(ConvLSTM, self).__init__()
 
@@ -154,6 +161,8 @@ class ConvLSTM(nn.Module):
 
 #Conv2d + BN + RELU
 class Convbn(nn.Module):
+    """PyTorch module for Convolutional layer+Batch Normalization with ReLU"""
+
     def __init__(self,ins,ous,kernel,padding = 0):
         super(Convbn,self).__init__()
 
@@ -166,6 +175,7 @@ class Convbn(nn.Module):
 
 
 class TemporalAttension(nn.Module):
+    """PyTorch module for RealSmileNet's TSA Block"""
     def __init__(self,channels):
         super(TemporalAttension,self).__init__()
 
@@ -190,6 +200,8 @@ class TemporalAttension(nn.Module):
 
 
 class DeepSmileNet(nn.Module):
+    """PyTorch module for RealSmileNet and AUDA features classification"""
+
     def __init__(self, f):
         super(DeepSmileNet,self).__init__()
         concat_size_on_last = 0
@@ -412,6 +424,7 @@ class DeepSmileNet(nn.Module):
 
 
     def _fpn_layers(self,cfg,in_channels = 3):
+        """Creates module for RealSmileNet's FPN Block"""
         layers = [nn.BatchNorm2d(in_channels)]
         for x in cfg:
             if x == 'M':
@@ -424,6 +437,8 @@ class DeepSmileNet(nn.Module):
         return nn.Sequential(*layers)
 
     def __forward_au_features(self, aus, aus_len, lstm_layer, cls_layer):
+        """Forwards AUDA Package's sequential features"""
+
         # https://suzyahyah.github.io/pytorch/2019/07/01/DataLoader-Pad-Pack-Sequence.html
         # https://github.com/pytorch/pytorch/issues/43227
         # RuntimeError: 'lengths' argument should be a 1D CPU int64 tensor, but got 1D cuda:0 Long tensor - naprawione - aus_len z cpu podawane
@@ -507,6 +522,7 @@ class DeepSmileNet(nn.Module):
         return all_features_to_sigm, all_features
 
 class MultipleDeepSmileNet(nn.Module):
+    """PyTorch module for multiple DeepSmileNet modules (aka. concatenation models)"""
     def __init__(self, deepSmileNets, variant):
         self.variant = variant
         super(MultipleDeepSmileNet,self).__init__()
@@ -537,7 +553,6 @@ class MultipleDeepSmileNet(nn.Module):
             linear = self.Classification[0]
             linear.weight.data.fill_(1/n)
             nn.init.constant_(linear.bias.data, 0)
-        # nograd na wszystkim
 
     def forward(self, x_videos, s, x_df_dict, frames_len):
         preds = []
@@ -553,4 +568,4 @@ class MultipleDeepSmileNet(nn.Module):
 
         cat_all = self.Classification(cat_all)
 
-        return cat_all
+        return cat_all, None

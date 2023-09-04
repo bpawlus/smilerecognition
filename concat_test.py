@@ -13,6 +13,7 @@ parser.add_argument('-f', nargs='+', type=list, default=["videos"],
                     help='starting features')
 
 def main():
+    """Performs calculation of best models to concatenate with starting features"""
     args = parser.parse_args()
     args.f = ["".join(feature) for feature in args.f]
     file_dir = os.path.join(args.save, f"model_val_labels.csv")
@@ -51,4 +52,5 @@ def main():
     for tup in data2:
         print(f"  Adding {tup[0]} feature, will cover {tup[1]}% answers")
 
-main()
+if __name__ == "__main__":
+    main()

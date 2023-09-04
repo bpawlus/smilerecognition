@@ -9,20 +9,58 @@ from PIL import Image
 import io
 
 def read_image(zip,name):
+    """Reads video frame from zip file
+
+    :param zip: Zip file to read from
+    :param name: Name of file to read
+
+    :returns: Video frame data
+    """
     return Image.open(io.BytesIO(zip.read(name)))
 
 def read_au_txt(zip,name):
+    """Reads AUDA sequential features (AU based) from zip file
+
+    :param zip: Zip file to read from
+    :param name: Name of file to read
+
+    :returns: AU based features data
+    """
     return pd.read_csv(io.BytesIO(zip.read(name)), sep=",")
 
 def read_si_txt(zip,name):
+    """Reads AUDA sequential features (smile intensities) from zip file
+
+    :param zip: Zip file to read from
+    :param name: Name of file to read
+
+    :returns: Smile intensities features data
+    """
     return pd.read_csv(io.BytesIO(zip.read(name)), sep="\n", header=None)
 
 def read_auwise_txt(zip,name):
+    """Reads AUDA features (AU-wise and cross-AU) from zip file
+
+    :param zip: Zip file to read from
+    :param name: Name of file to read
+
+    :returns: AUDA features data
+    """
     return pd.read_csv(io.BytesIO(zip.read(name)), sep=",", header=None)
 
 
 
 def load_frames(videos_data_names, videos_data, name, videos_frequency, video_max_len):
+    """Loads video frames to be used in model
+
+    :param name: Requested name
+    :param videos_data: Zip file to read from
+    :param videos_data_names: Dictionary containing names of all video frames for a video sequence
+    :param videos_frequency: FPS used in videos
+    :param video_max_len: Length of longest video
+
+    :returns: Video frames data and their length
+    """
     files = [f for f in videos_data_names[name] if f.endswith(".jpg") and f.replace(".jpg","").isnumeric()]
     files = sorted(files, key = lambda x : int(x.replace(".jpg","")))
 
@@ -54,6 +92,16 @@ def load_frames(videos_data_names, videos_data, name, videos_frequency, video_ma
     return pad_x, frame_count
 
 def load_features_si(files, features_data, key, videos_frequency, video_max_len):
+    """Loads smile intensities features to be used in model
+
+    :param key: Requested name
+    :param features_data: Zip file to read from
+    :param files: Dictionary containing names of all AUDA package features for a video sequence
+    :param videos_frequency: FPS used in videos
+    :param video_max_len: Length of longest video
+
+    :returns: Smile intensities features and their length
+    """
     pd = read_si_txt(features_data, files[key])
 
     pad_x = np.zeros((video_max_len, 1))
@@ -71,6 +119,18 @@ def load_features_si(files, features_data, key, videos_frequency, video_max_len)
     return pad_x, frame_count
 
 def load_features_aus(files, features_data, aus_feature_name, videos_frequency, sigmoid_mul, sigmoid_add, video_max_len):
+    """Loads AU based features to be used in model
+
+    :param key: Requested name
+    :param aus_feature_name: Requested AU based feature name
+    :param features_data: Zip file to read from
+    :param files: Dictionary containing names of all AUDA package features for a video sequence
+    :param videos_frequency: FPS used in videos
+    :param video_max_len: Length of longest video
+    :param sigmoid_mul: Sigmoid data normalization modifier -> narrows or expands the curve
+    :param sigmoid_add: Sigmoid data normalization modifier -> offsets the curve
+    :returns: AU based features and their length
+    """
     pd = read_au_txt(features_data, files[aus_feature_name])
     columns = sorted(pd.columns.values.tolist())
 
@@ -88,6 +148,16 @@ def load_features_aus(files, features_data, aus_feature_name, videos_frequency, 
     return pad_x, frame_count
 
 def load_features_auwise(files, features_data, sigmoid_mul, sigmoid_add):
+    """Loads AU-wise features to be used in model
+
+    :param features_data: Zip file to read from
+    :param files: Dictionary containing names of all AUDA package features for a video sequence
+    :param sigmoid_mul: Sigmoid data normalization modifier -> narrows or expands the curve
+    :param sigmoid_add: Sigmoid data normalization modifier -> offsets the curve
+
+    :returns: AU-wise features
+    """
+
     x = []
     for auwise_feature in ["AU-wise_apex", "AU-wise_offset", "AU-wise_onset", "AU-wise_whole_sequence", "AU-wise_whole_smile"]:
         pd = read_auwise_txt(features_data, files[auwise_feature])
@@ -100,6 +170,13 @@ def load_features_auwise(files, features_data, sigmoid_mul, sigmoid_add):
     return x
 
 def load_features_crossau(files, features_data):
+    """Loads cross-AU features to be used in model
+
+    :param features_data: Zip file to read from
+    :param files: Dictionary containing names of all AUDA package features for a video sequence
+
+    :returns: Cross-AU features
+    """
     x = []
     for auwise_feature in ["cross-AU_apex", "cross-AU_offset", "cross-AU_onset", "cross-AU_whole_sequence", "cross-AU_whole_smile"]:
         pd = read_auwise_txt(features_data, files[auwise_feature])
@@ -112,6 +189,12 @@ def load_features_crossau(files, features_data):
     return x
 
 def videos_zip_to_dict(data):
+    """Prepares dictionary containing names of all video frames for a video sequence
+
+    :param data: Zip file to read from
+
+    :returns: Dictionary containing names of all video frames for a video sequence and length of longest video
+    """
     data_name = dict()
 
     for file in data.namelist():
@@ -126,6 +209,12 @@ def videos_zip_to_dict(data):
     return data_name, max([len(i) for i in data_name.values()])
 
 def features_zip_to_dict(data, calcminmax_features):
+    """Prepares dictionary containing names of all AUDA package features for a video sequence
+
+    :param data: Zip file to read from
+
+    :returns: Dictionary containing names of all AUDA package features for a video sequence and length of longest video
+    """
     data_name = dict()
     minmax_name = dict()
 
@@ -213,7 +302,8 @@ def features_zip_to_dict(data, calcminmax_features):
     return data_name, minmax_name
 
 class UVANEMODataGenerator(torch.utils.data.Dataset):
-    def __init__(self, label_path, videos_path, videos_frequency, features_path, vgg_path, feature_list, test = False, calcminmax_features = False):
+    """Dataset of UVA-Nemo and AUDA features"""
+    def __init__(self, label_path, videos_path, videos_frequency, features_path, feature_list, test = False, calcminmax_features = False):
         self.label_path = label_path
         self.test = test
         self.calcminmax_features = calcminmax_features
@@ -225,9 +315,6 @@ class UVANEMODataGenerator(torch.utils.data.Dataset):
 
         self.features_path = features_path
         self.__init_features_data()
-
-        self.vgg_path = vgg_path
-        self.__init_vgg_data()
 
         self.__init_whole_dataset()
 
@@ -243,9 +330,6 @@ class UVANEMODataGenerator(torch.utils.data.Dataset):
         self.features_data = zipfile.ZipFile(self.features_path)
         self.features_data_names, _ = features_zip_to_dict(self.features_data, self.calcminmax_features)
 
-        return
-
-    def __init_vgg_data(self):
         return
 
     def __init_whole_dataset(self):
@@ -277,7 +361,7 @@ class UVANEMODataGenerator(torch.utils.data.Dataset):
             frames_tensors, video_len = load_frames(self.videos_data_names, self.videos_data, name, self.videos_frequency, self.video_max_len)
             frames_tensors_scaled = frames_tensors / self.frame_scale
 
-        # Dynamic Features
+        # AUDA Features
         dynamics_tensors = dict()
         for key in self.features_data_names[list(self.features_data_names)[0]]:
             dynamics_tensors.update({key: numpy.empty(1)})

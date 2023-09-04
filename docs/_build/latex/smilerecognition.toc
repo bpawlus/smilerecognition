@@ -1,0 +1,13 @@
+\babel@toc {english}{}\relax 
+\contentsline {chapter}{\numberline {1}smilerecognition}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}concat\_test module}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}constants module}{1}{section.1.2}%
+\contentsline {section}{\numberline {1.3}dataset module}{1}{section.1.3}%
+\contentsline {section}{\numberline {1.4}extract\_movie\_frames module}{4}{section.1.4}%
+\contentsline {section}{\numberline {1.5}get\_best\_models module}{5}{section.1.5}%
+\contentsline {section}{\numberline {1.6}model module}{5}{section.1.6}%
+\contentsline {section}{\numberline {1.7}net module}{8}{section.1.7}%
+\contentsline {section}{\numberline {1.8}split\_labels module}{15}{section.1.8}%
+\contentsline {section}{\numberline {1.9}start module}{15}{section.1.9}%
+\contentsline {chapter}{Python Module Index}{17}{section*.125}%
+\contentsline {chapter}{Index}{19}{section*.126}%

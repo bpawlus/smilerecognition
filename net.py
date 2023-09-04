@@ -7,17 +7,45 @@ import torch
 import torch.nn as nn
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
-from sklearn.model_selection import KFold
 import numpy as np
 import json
 import shutil
 import pandas as pd
 import collections
-
+import time
 
 class UVANEMO():
-    def __init__(self, epochs, lr, folds_path, videos_path, videos_frequency, features_path, vgg_path,
+    """Class used for model training on UVA-NEMO database"""
+
+    epochs = None
+    """Number of epochs used in model training"""
+    lr = None
+    """Learning rate used in model optizmizer"""
+
+    batch_size_train = None
+    """Size of minibatches in training set"""
+    batch_size_valtest = None
+    """Size of minibatches in validate and testing set"""
+
+    videos_frequency = None
+    """FPS used in videos"""
+    calcminmax_features = None
+    """Debugging variable - used to display AUDA statistics"""
+
+    folds_path = None
+    """Path to cross-validation method folds' labels"""
+    videos_path = None
+    """Path to zip with UVA-NEMO videos"""
+    features_path = None
+    """Path to zip with UVA-NEMO based AUDA features"""
+
+    __out_verbose = None
+    """Default verbose file path"""
+
+
+    def __init__(self, epochs, lr, folds_path, videos_path, videos_frequency, features_path,
                  batch_size_train, batch_size_valtest, calcminmax_features):
+        """Class constructor"""
         self.epochs = epochs
         self.lr = lr
         self.batch_size_train = batch_size_train
@@ -26,28 +54,35 @@ class UVANEMO():
         self.calcminmax_features = calcminmax_features
 
         self.folds_path = folds_path
-
         self.videos_path = videos_path
         self.features_path = features_path
-        self.vgg_path = vgg_path
 
-    # def loss_func_weighted(self, output, target, weights):
-    #     # weighted binary cross entropy
-    #     loss = weights[0] * ((1 - target) * torch.log(1 - output)) + weights[1] * (target * torch.log(output))
-    #
-    #     return torch.neg(torch.mean(loss))
+    def __out(self, info, file):
+        """Writes display info to console and extra file
 
-    def out(self, info, file):
+        :param info: Information to display
+        :param file: Extra text file to export information
+        """
         print(info)
 
         with open(f"{file}", "a") as f:
             f.write(info + "\n")
 
-    def outverbose(self, info):
-        self.out(info, self.out_verbose)
+    def __out_to_verbose(self, info):
+        """Writes display info to console and default verbose file
+
+        :param info: Information to display
+        """
+        self.__out(info, self.__out_verbose)
 
 
     def __determine_value(self, name):
+        """Determines numerical variable for class name
+
+        :param name: Class name
+        :returns: Numerical variable for class name
+        """
+
         if "deliberate" in name:
             return 0
         elif "spontaneous" in name:
@@ -55,7 +90,12 @@ class UVANEMO():
         else:
             return -1
 
-    def split_orig(self, label_path, folds_path):
+    def split(self, label_path, folds_path):
+        """Changes 10 folds containing video sequences to 10 cross-validation cycles training,validation and testing sets
+
+        :param label_path: Directory with 10 folds
+        :param folds_path: Save directory for cycles sets
+        """
         for i in range(10):
             try:
                 shutil.rmtree(os.path.join(folds_path, str(i + 1)))
@@ -120,14 +160,19 @@ class UVANEMO():
             print(f"Fold rest: {len(fold_train_labels)%self.batch_size_train} {len(fold_validate_labels)%self.batch_size_valtest} {len(fold_test_labels)%self.batch_size_valtest}")
 
 
-    def prepare_loaders(self, loader_data_path, features):
+    def __prepare_loaders(self, loader_data_path, features):
+        """Prepares loaders for training
+
+        :param loader_data_path: Directory with fold's sets
+        :param features: Features for dataset that model will require
+        """
+
         # ===== TRAIN =====
         train_labels = os.path.join(loader_data_path, "train.json")
         params = {"label_path": train_labels,
                   "videos_path": self.videos_path,
                   "videos_frequency": self.videos_frequency,
                   "features_path": self.features_path,
-                  "vgg_path": self.vgg_path,
                   "calcminmax_features": self.calcminmax_features,
                   "feature_list": features
                   }
@@ -143,7 +188,6 @@ class UVANEMO():
                   "videos_path": self.videos_path,
                   "videos_frequency": self.videos_frequency,
                   "features_path": self.features_path,
-                  "vgg_path": self.vgg_path,
                   "feature_list": features,
                   "test": True}
 
@@ -159,7 +203,6 @@ class UVANEMO():
                   "videos_path": self.videos_path,
                   "videos_frequency": self.videos_frequency,
                   "features_path": self.features_path,
-                  "vgg_path": self.vgg_path,
                   "feature_list": features,
                   "test": True}
 
@@ -173,31 +216,57 @@ class UVANEMO():
         self.test_penalty = self.train_size / self.test_size
 
 
-    def copy_loaders(self, loader_data_path, target_path):
+    def __copy_loaders(self, loader_data_path, target_path):
+        """Copies fold's labels to model training output path
+
+        :param loader_data_path: Directory with fold's sets
+        :param target_path: Model training output path
+        """
         shutil.copy2(os.path.join(loader_data_path, "train.json"), os.path.join(target_path, "train.json"))
         shutil.copy2(os.path.join(loader_data_path, "validate.json"), os.path.join(target_path, "validate.json"))
         shutil.copy2(os.path.join(loader_data_path, "test.json"), os.path.join(target_path, "test.json"))
 
-    def prepare_output_data(self, target_path):
-        self.out_verbose = os.path.join(target_path, "verbose.txt")
-        self.out_csv_labels = os.path.join(target_path, "labels.csv")
+    def __prepare_output_models(self, target_path):
+        """Copies fold's labels to model training output path
 
-    def prepare_output_models(self, target_path):
+        :param loader_data_path: Directory with fold's sets
+        :param target_path: Model training output path
+        """
+
         os.makedirs(os.path.join(target_path, "models"))
-        self.out_evaldata = os.path.join(target_path, "model")
-        self.out_model = os.path.join(target_path, "models")
+        self.__out_evaldata = os.path.join(target_path, "model")
+        self.__out_model = os.path.join(target_path, "models")
 
 
     def __init_loaders(self, loader_data_path, folder_path, loader_features):
-        self.prepare_loaders(loader_data_path, loader_features)
-        self.copy_loaders(loader_data_path, folder_path)
+        """Prepares loaders for training and copies fold's labels to model training output path
+
+        :param loader_data_path: Directory with fold's sets
+        :param folder_path: Model training output path
+        :param loader_features: Features for dataset that model will require
+        """
+
+        self.__prepare_loaders(loader_data_path, loader_features)
+        self.__copy_loaders(loader_data_path, folder_path)
 
     def __init_outputs(self,folder_path):
-        self.prepare_output_models(folder_path)
-        self.prepare_output_data(folder_path)
+        """Copies fold's labels to model training output path and initializes default verbose file
+
+        :param folder_path: Model training output path
+        """
+
+        self.__prepare_output_models(folder_path)
+        self.__out_verbose = os.path.join(folder_path, "verbose.txt")
 
 
-    def prepare_data_training(self, idx, working_dir, features):
+    def prepare_data_single(self, idx, working_dir, features):
+        """Prepares single model for training
+
+        :param idx: Index of fold cycle used in training
+        :param working_dir: Model training output path
+        :param features: Features for dataset that model will require
+        """
+
         loader_data_path = os.path.join(self.folds_path, idx)
         if not os.path.isdir(loader_data_path):
             return
@@ -210,7 +279,15 @@ class UVANEMO():
 
         self.architecture = DeepSmileNet(features)
 
-    def prepare_data_load(self, idx, working_dir, state_dir, variant, ignore):
+    def prepare_data_concat(self, idx, working_dir, state_dir, variant, ignore):
+        """Prepares concatenation model for training
+
+        :param idx: Index of fold cycle used in training
+        :param working_dir: Model training output path
+        :param state_dir: Directory containing pretrained models
+        :param variant: Variant of concatenation
+        :param ignore: By default all pretrained models are used in training. This parameter adds option to ignore some of them
+        """
         loader_data_path = os.path.join(self.folds_path, idx)
         if not os.path.isdir(loader_data_path):
             return
@@ -247,7 +324,9 @@ class UVANEMO():
         self.architecture = MultipleDeepSmileNet(realSmileNets, self.variant)
 
 
-    def prepare_training_statistics(self):
+    def __prepare_training_statistics(self):
+        """Prepares statistics of training process (accuracies, losses, predicted labels etc."""
+
         self.last_epochs = []
 
         self.last_train_accs = []
@@ -280,7 +359,15 @@ class UVANEMO():
             self.last_test_pred_labels[v[0]] = []
             self.last_test_true_labels[v[0]] = [v[1]]
 
-    def save_model(self, e, va, vl, ta, tl):
+    def __save_model(self, e, va, vl, ta, tl):
+        """Saves model's hyperparameters
+
+        :param e: Epoch used in file name
+        :param va: Validate set accuracy used in file name
+        :param vl: Validate set loss used in file name
+        :param ta: Test set accuracy used in file name
+        :param tl: Test set loss used in file name
+        """
         m_name_value_loss = "{value:.2f}"
         m_name_value_acc = "{value:.4f}"
         m_epoch = f"E-{e}"
@@ -289,12 +376,14 @@ class UVANEMO():
         m_ta = f"TA-{m_name_value_acc.format(value=ta)}"
         m_tl = f"TL-{m_name_value_loss.format(value=tl)}"
 
-        filepath = os.path.join(self.out_model, f"{m_epoch}_{m_va}_{m_vl}_{m_ta}_{m_tl}.pt")
+        filepath = os.path.join(self.__out_model, f"{m_epoch}_{m_va}_{m_vl}_{m_ta}_{m_tl}.pt")
         torch.save(self.architecture.state_dict(), filepath)
 
-    def update_training_diagram(self):
-        out_acc = self.out_evaldata + "_acc.jpeg"
-        out_loss = self.out_evaldata + "_loss.jpeg"
+    def __update_training_diagram(self):
+        """Updates learning curves."""
+
+        out_acc = self.__out_evaldata + "_acc.jpeg"
+        out_loss = self.__out_evaldata + "_loss.jpeg"
 
         if os.path.exists(out_acc):
             os.remove(out_acc)
@@ -344,6 +433,12 @@ class UVANEMO():
         # ===== =====
 
     def __update_csv_labels(self, filename, pred_labels, true_labels):
+        """Updates predicted labels data to csv file
+
+        :param filename: Output csv name
+        :param pred_labels: Data containing predicted labels
+        :param true_labels: Data containing ground true labels
+        """
         df = pd.DataFrame.from_dict(pred_labels).transpose()
         df.columns = [f"E{int(name)}" for name in list(df.columns.values)]
         df2 = pd.DataFrame.from_dict(true_labels).transpose()
@@ -352,9 +447,10 @@ class UVANEMO():
 
         df.to_csv(filename, sep=",")
 
-    def update_csv_lossacc_data(self):
-        out_acc = self.out_evaldata + "_acc.csv"
-        out_loss = self.out_evaldata + "_loss.csv"
+    def __update_csv_lossacc_data(self):
+        """Updates learning curves data to csv file"""
+        out_acc = self.__out_evaldata + "_acc.csv"
+        out_loss = self.__out_evaldata + "_loss.csv"
 
         if os.path.exists(out_acc):
             os.remove(out_acc)
@@ -374,10 +470,11 @@ class UVANEMO():
         df.columns = ['Epoch', 'Accuracy Train', 'Accuracy Validate', 'Accuracy Test']
         df.to_csv(out_acc, index=False, sep=",")
 
-    def update_csv_labels_data(self):
-        out_labels_train = self.out_evaldata + "_train_labels.csv"
-        out_labels_val = self.out_evaldata + "_val_labels.csv"
-        out_labels_test = self.out_evaldata + "_test_labels.csv"
+    def __update_csv_labels_data(self):
+        """Updates predicted labels data to csv files"""
+        out_labels_train = self.__out_evaldata + "_train_labels.csv"
+        out_labels_val = self.__out_evaldata + "_val_labels.csv"
+        out_labels_test = self.__out_evaldata + "_test_labels.csv"
 
         if os.path.exists(out_labels_train):
             os.remove(out_labels_train)
@@ -390,55 +487,78 @@ class UVANEMO():
         self.__update_csv_labels(out_labels_val, self.last_val_pred_labels, self.last_val_true_labels)
         self.__update_csv_labels(out_labels_test, self.last_test_pred_labels, self.last_test_true_labels)
 
-    def __training_prepare(self, idx):
+    def __train_prepare(self, idx):
+        """Prepares training process (model initialization, GPU usage, optimizer)
+
+        :param idx: Index of fold cycle used in training
+        :returns: Device where model is stored, optimizer, loss function used
+        """
+
         # Może CUDA?
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         cnt = torch.cuda.device_count()
 
         if cnt > 1:
-            self.outverbose(f"use {torch.cuda.device_count()} GPUS")
+            self.__out_to_verbose(f"use {torch.cuda.device_count()} GPUS")
             self.architecture = nn.DataParallel(self.architecture)
         elif cnt == 1:
-            self.outverbose(f"use one gpu")
-        self.outverbose(f"using features: {self.train_generator.feature_list}")
-        self.outverbose(f"using lr: {self.lr}")
+            self.__out_to_verbose(f"use one gpu")
+        self.__out_to_verbose(f"using features: {self.train_generator.feature_list}")
+        self.__out_to_verbose(f"using lr: {self.lr}")
         if idx is not None:
-            self.outverbose(f"using fold: {idx}")
-        self.outverbose(f"train size: {self.train_size}, validate size: {self.validate_size}, test size: {self.test_size}")
+            self.__out_to_verbose(f"using fold: {idx}")
+        self.__out_to_verbose(f"train size: {self.train_size}, validate size: {self.validate_size}, test size: {self.test_size}")
 
         self.architecture.to(device)
         optimizer = torch.optim.Adam(self.architecture.parameters(), lr=self.lr)
         loss_func = (nn.BCELoss())
 
-        self.prepare_training_statistics()
+        self.__prepare_training_statistics()
         return device,optimizer,loss_func
 
     def __debug_params(self, optimizer, prefix):
+        """Debugs model's parameters. Used to check if model properly freezes params
+
+        :param optimizer: Model optimizer
+        :param prefix: Special file to debug this data
+        """
+
         file = os.path.join(self.folder_path, f"{prefix}.txt")
 
-        self.out("Optimizer state_dict:", file)
+        self.__out("Optimizer state_dict:", file)
         for var_name in optimizer.state_dict():
-            self.out(f"{var_name}: {optimizer.state_dict()[var_name]}", file)
-        self.out("\n", file)
+            self.__out(f"{var_name}: {optimizer.state_dict()[var_name]}", file)
+        self.__out("\n", file)
 
-        self.out("Model params:", file)
+        self.__out("Model params:", file)
         for name, param in self.architecture.named_parameters():
-            self.out(f"\n{name}"
+            self.__out(f"\n{name}"
                             f"\n{param.data}"
                             f"\nTrainable: {param.requires_grad}"
                             , file)
 
-        self.out("Model state_dict:", file)
+        self.__out("Model state_dict:", file)
         for param_tensor in self.architecture.state_dict():
-            self.out(f"\n{param_tensor}"
+            self.__out(f"\n{param_tensor}"
                             f"\n({self.architecture.state_dict()[param_tensor].size()})"
                             f"\n{self.architecture.state_dict()[param_tensor]}"
                             , file)
 
-        self.out("\n", file)
+        self.__out("\n", file)
 
 
     def __process_loader_data(self, x_video, y, s, x_df_dict, device):
+        """Process data that comes from one of loader's datasets
+
+        :param x_video: Input features - Compressed video frames
+        :param x_df_dict: Input features - AUDA Package features
+        :param device: Device where model is stored
+        :param y: Ground true labels
+        :param s: 'Reversed' lengths of sequence (element-wise MaxLengthInBatch-frames_len)
+
+        :returns: Processed data
+        """
+
         # Obcinanie, nie kazde wideo jest tej samej dlugosci
         index = s.min().item()
         s = s - s.min()
@@ -461,12 +581,31 @@ class UVANEMO():
 
         return x_video, y, s, x_df_dict
 
-    def __fit(self, x, s, dynamics_features, frames_len, device):
-        pred = self.architecture(x, s, dynamics_features, frames_len)
+    def __fit(self, x_video, s, x_df_dict, frames_len, device):
+        """Forwards data to model
+
+        :param x_video: Input features - Compressed video frames
+        :param x_df_dict: Input features - AUDA Package features
+        :param device: Device where model is stored
+        :param frames_len: Lengths of sequence
+        :param s: 'Reversed' lengths of sequence (element-wise MaxLengthInBatch-frames_len) (used in ConvLSTM)
+
+        :returns: Sigmoid output and predicted labels from a batch
+        """
+
+        pred, _ = self.architecture(x_video, s, x_df_dict, frames_len)
         pred_y = (pred >= 0.5).float().to(device).data
         return pred, pred_y
 
     def __calc_loss(self, train, loss_func, pred, y, optimizer):
+        """Calculates loss and optimizes the model in batch
+
+        :param pred: Predicted labels from a batch
+        :param y: Ground true labels
+        :param train: Should optimization take place
+        :param optimizer: Model optimizer
+        :param loss_func: Used loss function
+        """
         loss = loss_func(pred, y)
 
         for W in self.architecture.parameters():
@@ -479,9 +618,21 @@ class UVANEMO():
 
 
     def __calc_and_out_total_accloss(self, prefix, epoch, pred_label, true_label, loss, accs_arr, losses_arr):
+        """Calculates and outputs total loss and accuracy in epoch
+
+        :param prefix: Prefix in output (whether it is training, validation or test set)
+        :param epoch: Epoch index
+        :param pred_label: Predicted labels
+        :param true_label: Ground true labels
+        :param loss: Total loss in epoch
+        :param accs_arr: Array where accuracies should be stored
+        :param losses_arr: Array where losses should be stored
+
+        :returns: Accuracy and loss in epoch
+        """
         accuracy = torch.sum(pred_label == true_label).type(torch.FloatTensor) / true_label.size(0)
 
-        self.outverbose(
+        self.__out_to_verbose(
             f'Epoch: ' + str(epoch) +
             f' | {prefix} Accuracy: ' + str(accuracy.item()) +
             f' | {prefix} Loss: ' + str(loss)
@@ -492,6 +643,13 @@ class UVANEMO():
         return accuracy, loss
 
     def __calc_total_labels(self, names, pred_label, labels_arr):
+        """Calculates predicted labels in epoch
+
+        :param names: Names of sequences
+        :param pred_label: Predicted labels
+        :param labels_arr: Array where predicted labels should be stored
+        """
+
         names = [item for sublist in names for item in sublist]
 
         for i in range(len(names)):
@@ -502,7 +660,18 @@ class UVANEMO():
                 val = int(pred_label[i].item())
             labels_arr[names[i]].append(val)
 
-    def __train_forward(self, device, data_loader, train, optimizer, loss_func):
+    def __single_forward(self, device, data_loader, train, optimizer, loss_func):
+        """Forwards data to model for a single epoch (single model)
+
+        :param device: Device where model is stored
+        :param data_loader: Data loader for either a training,validate or test set
+        :param train: Should optimization take place in each batch
+        :param optimizer: Model optimizer
+        :param loss_func: Used loss function
+
+        :returns: Total loss, predicted labels, true labels
+        """
+
         total_loss = 0
 
         pred_label = []
@@ -510,11 +679,17 @@ class UVANEMO():
         label_idx = []
         names = []
 
-        for idx, name, x_video, y, s, x_df_dict, frames_len in data_loader:
-            x_video, y, s, x_df_dict = self.__process_loader_data(x_video, y, s, x_df_dict,device)
-            pred, pred_y = self.__fit(x_video, s, x_df_dict, frames_len, device)
+        total_frames = 0
+        total_elements = 0
+        frame_time_start = time.time()
 
-            pred_label.append(pred_y)
+        for idx, name, x_video, y, s, x_df_dict, frames_len in data_loader:
+            total_frames += s.numpy().sum()
+            total_elements += s.numpy().size
+            x_video, y, s, x_df_dict = self.__process_loader_data(x_video, y, s, x_df_dict,device)
+            pred, predy = self.__fit(x_video, s, x_df_dict, frames_len, device)
+
+            pred_label.append(predy)
             true_label.append(y)
             label_idx.append(idx)
             names.append(name)
@@ -522,13 +697,33 @@ class UVANEMO():
             loss = self.__calc_loss(train, loss_func, pred, y, optimizer)
             total_loss += loss
 
+        frame_time_end = time.time()
+        print(f"Time elapsed for {total_frames} frames ({total_elements} sequences) is {(frame_time_end-frame_time_start)*1000} ms")
+
         pred_label = torch.cat(pred_label, 0)
         true_label = torch.cat(true_label, 0)
 
         return (total_loss, pred_label, true_label, label_idx, names)
 
-    def __train_evaluate_forward(self, epoch, prefix, accs_arr, losses_arr, labels_arr, data_loader, train, device, optimizer, loss_func, loss_penalty):
-        (loss, pred_label, true_label, label_idx, names) = self.__train_forward(device, data_loader, train, optimizer, loss_func)
+    def __single_evaluate_forward(self, epoch, prefix, accs_arr, losses_arr, labels_arr, data_loader, train, device, optimizer, loss_func, loss_penalty):
+        """Forwards and calculates data to model for a single epoch (single model)
+
+        :param epoch: Epoch index
+        :param prefix: Prefix in output (whether it is training, validation or test set)
+        :param accs_arr: Array where accuracies should be stored
+        :param losses_arr: Array where losses should be stored
+        :param labels_arr: Array where predicted labels should be stored
+        :param device: Device where model is stored
+        :param data_loader: Data loader for either a training,validate or test set
+        :param train: Should optimization take place in each batch
+        :param optimizer: Model optimizer
+        :param loss_func: Used loss function
+        :param loss_penalty: Multiplier of loss function (for validate and tests in order to compare to training set)
+
+        :returns: Accuracy and loss in epoch
+        """
+
+        (loss, pred_label, true_label, label_idx, names) = self.__single_forward(device, data_loader, train, optimizer, loss_func)
         loss=loss*loss_penalty
 
         accuracy, loss = self.__calc_and_out_total_accloss(prefix, epoch, pred_label, true_label, loss, accs_arr, losses_arr)
@@ -536,14 +731,18 @@ class UVANEMO():
 
         return accuracy, loss
 
-    def train(self, idx):
-        device,optimizer,loss_func = self.__training_prepare(idx)
+    def single_train(self, idx):
+        """Performs training of single model
+
+        :param idx: Index of fold cycle used in training
+        """
+        device,optimizer,loss_func = self.__train_prepare(idx)
 
         for epoch in range(self.epochs):
             self.last_epochs.append(epoch)
             # ===== TRAIN =====
 
-            train_accuracy, train_loss = self.__train_evaluate_forward(epoch, "Train",
+            train_accuracy, train_loss = self.__single_evaluate_forward(epoch, "Train",
                                           self.last_train_accs,
                                           self.last_train_losses,
                                           self.last_train_pred_labels,
@@ -556,7 +755,7 @@ class UVANEMO():
 
             # ===== VALIDATE =====
 
-            validate_accuracy, validate_loss = self.__train_evaluate_forward(epoch, "Validate",
+            validate_accuracy, validate_loss = self.__single_evaluate_forward(epoch, "Validate",
                                           self.last_val_accs,
                                           self.last_val_losses,
                                           self.last_val_pred_labels,
@@ -567,7 +766,7 @@ class UVANEMO():
 
             # ===== TEST =====
 
-            test_accuracy, test_loss = self.__train_evaluate_forward(epoch, "Test",
+            test_accuracy, test_loss = self.__single_evaluate_forward(epoch, "Test",
                                           self.last_test_accs,
                                           self.last_test_losses,
                                           self.last_test_pred_labels,
@@ -577,16 +776,26 @@ class UVANEMO():
             # ===== =====
 
             # ===== UPDATE MODEL =====
-            self.save_model(epoch, validate_accuracy, validate_loss*self.validate_penalty, test_accuracy, test_loss*self.test_penalty)
-            self.update_training_diagram()
-            self.update_csv_lossacc_data()
-            self.update_csv_labels_data()
+            self.__save_model(epoch, validate_accuracy, validate_loss*self.validate_penalty, test_accuracy, test_loss*self.test_penalty)
+            self.__update_training_diagram()
+            self.__update_csv_lossacc_data()
+            self.__update_csv_labels_data()
 
             self.architecture.train()
             # ===== =====
 
 
-    def __load_forward(self, device, data_loader, train, optimizer, loss_func):
+    def __multi_forward(self, device, data_loader, train, optimizer, loss_func):
+        """Forwards data to model for a single epoch (concatenation model)
+
+        :param device: Device where model is stored
+        :param data_loader: Data loader for either a training,validate or test set
+        :param train: Should optimization take place in each batch
+        :param optimizer: Model optimizer
+        :param loss_func: Used loss function
+
+        :returns: Total loss, predicted labels, true labels
+        """
         total_loss = 0
 
         pred_label = []
@@ -594,9 +803,15 @@ class UVANEMO():
         label_idx = []
         names = []
 
-        for idx, name, x_videos, y, s, x_df_dict, frames_len in data_loader:
-            x_videos, y, s, dynamics_features = self.__process_loader_data(x_videos, y, s, x_df_dict, device)
-            pred, predy = self.__fit(x_videos, s, x_df_dict, frames_len, device)
+        total_frames = 0
+        total_elements = 0
+        frame_time_start = time.time()
+
+        for idx, name, x_video, y, s, x_df_dict, frames_len in data_loader:
+            total_frames += s.numpy().sum()
+            total_elements += s.numpy().size
+            x_video, y, s, x_df_dict = self.__process_loader_data(x_video, y, s, x_df_dict, device)
+            pred, predy = self.__fit(x_video, s, x_df_dict, frames_len, device)
 
             pred_label.append(predy)
             true_label.append(y)
@@ -606,13 +821,33 @@ class UVANEMO():
             loss = self.__calc_loss(train, loss_func, pred, y, optimizer)
             total_loss += loss
 
+
+        frame_time_end = time.time()
+        print(f"Time elapsed for {total_frames} frames ({total_elements} sequences) is {(frame_time_end-frame_time_start)*1000} ms")
+
         pred_label = torch.cat(pred_label, 0)
         true_label = torch.cat(true_label, 0)
 
         return (total_loss, pred_label, true_label, label_idx, names)
 
-    def __load_evaluate_forward(self, epoch, prefix, accs_arr, losses_arr, labels_arr, data_loader, train, device, optimizer, loss_func, loss_penalty):
-        (loss, pred_label, true_label, label_idx, names) = self.__load_forward(device, data_loader, train, optimizer, loss_func)
+    def __multi_evaluate_forward(self, epoch, prefix, accs_arr, losses_arr, labels_arr, data_loader, train, device, optimizer, loss_func, loss_penalty):
+        """Forwards and calculates data to model for a single epoch (concatenation model)
+
+        :param epoch: Epoch index
+        :param prefix: Prefix in output (whether it is training, validation or test set)
+        :param accs_arr: Array where accuracies should be stored
+        :param losses_arr: Array where losses should be stored
+        :param labels_arr: Array where predicted labels should be stored
+        :param device: Device where model is stored
+        :param data_loader: Data loader for either a training,validate or test set
+        :param train: Should optimization take place in each batch
+        :param optimizer: Model optimizer
+        :param loss_func: Used loss function
+        :param loss_penalty: Multiplier of loss function (for validate and tests in order to compare to training set)
+
+        :returns: Accuracy and loss in epoch
+        """
+        (loss, pred_label, true_label, label_idx, names) = self.__multi_forward(device, data_loader, train, optimizer, loss_func)
         loss = loss * loss_penalty
 
         accuracy, loss = self.__calc_and_out_total_accloss(prefix, epoch, pred_label, true_label, loss, accs_arr, losses_arr)
@@ -620,8 +855,13 @@ class UVANEMO():
 
         return accuracy, loss
 
-    def load(self, idx):
-        device,optimizer,loss_func = self.__training_prepare(idx)
+    def multi_train(self, idx):
+        """Performs training of concatenation model
+
+        :param idx: Index of fold cycle used in training
+        """
+
+        device,optimizer,loss_func = self.__train_prepare(idx)
         self.__debug_params(optimizer, "verbose_model_s")
 
         self.architecture.train()
@@ -630,7 +870,7 @@ class UVANEMO():
 
             # ===== TRAIN =====
 
-            train_accuracy, train_loss = self.__load_evaluate_forward(epoch, "Train",
+            train_accuracy, train_loss = self.__multi_evaluate_forward(epoch, "Train",
                                           self.last_train_accs,
                                           self.last_train_losses,
                                           self.last_train_pred_labels,
@@ -643,7 +883,7 @@ class UVANEMO():
 
             # ===== VALIDATE =====
 
-            validate_accuracy, validate_loss = self.__load_evaluate_forward(epoch, "Validate",
+            validate_accuracy, validate_loss = self.__multi_evaluate_forward(epoch, "Validate",
                                                                              self.last_val_accs,
                                                                              self.last_val_losses,
                                                                              self.last_val_pred_labels,
@@ -654,7 +894,7 @@ class UVANEMO():
 
             # ===== TEST =====
 
-            test_accuracy, test_loss = self.__load_evaluate_forward(epoch, "Test",
+            test_accuracy, test_loss = self.__multi_evaluate_forward(epoch, "Test",
                                                                      self.last_test_accs,
                                                                      self.last_test_losses,
                                                                      self.last_test_pred_labels,
@@ -664,10 +904,10 @@ class UVANEMO():
             # ===== =====
 
             # ===== UPDATE MODEL =====
-            self.save_model(epoch, validate_accuracy, validate_loss*self.validate_penalty, test_accuracy, test_loss*self.test_penalty)
-            self.update_training_diagram()
-            self.update_csv_lossacc_data()
-            self.update_csv_labels_data()
+            self.__save_model(epoch, validate_accuracy, validate_loss*self.validate_penalty, test_accuracy, test_loss*self.test_penalty)
+            self.__update_training_diagram()
+            self.__update_csv_lossacc_data()
+            self.__update_csv_labels_data()
 
             self.architecture.train()
             if epoch%10 == 0:

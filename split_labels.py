@@ -6,13 +6,13 @@ from constants import valuesdict
 
 parser = argparse.ArgumentParser(description='Split true labels to spontaneus and deliberate')
 
-parser.add_argument('--d', default = "", type=str,
-                    help='subdir')
+parser.add_argument('--d', default = "", type=str, help='subdir')
 
 def main():
+    """In single trained single models splits predicted labels between spontaneus and deliberate ones"""
     args = parser.parse_args()
 
-    dir = dirsdict["train_dir"]
+    dir = dirsdict["single_dir"]
     if args.d != "":
         dir = os.path.join(dir, args.d)
 
@@ -39,5 +39,5 @@ def main():
                     new_file_dir_spontaneus = os.path.join(subdirfold, f"model_{file}_labels_spo.csv")
                     df_deliberate.to_csv(new_file_dir_deliberate, sep=",", index=False)
                     df_spontaneus.to_csv(new_file_dir_spontaneus, sep=",", index=False)
-
-main()
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,220 @@
+\begin{sphinxtheindex}
+\let\bigletter\sphinxstyleindexlettergroup
+\let\spxpagem \sphinxstyleindexpagemain
+\let\spxentry \sphinxstyleindexentry
+\let\spxextra \sphinxstyleindexextra
+
+  \bigletter {\sphinxsymbolsname}
+  \item \spxentry{\_NonLocalBlockND}\spxextra{class in model}, \hyperpage{8}
+  \item \spxentry{\_\_calc\_and\_out\_total\_accloss()}\spxextra{net.UVANEMO method}, \hyperpage{8}
+  \item \spxentry{\_\_calc\_loss()}\spxextra{net.UVANEMO method}, \hyperpage{8}
+  \item \spxentry{\_\_calc\_total\_labels()}\spxextra{net.UVANEMO method}, \hyperpage{9}
+  \item \spxentry{\_\_copy\_loaders()}\spxextra{net.UVANEMO method}, \hyperpage{9}
+  \item \spxentry{\_\_debug\_params()}\spxextra{net.UVANEMO method}, \hyperpage{9}
+  \item \spxentry{\_\_determine\_value()}\spxextra{net.UVANEMO method}, \hyperpage{9}
+  \item \spxentry{\_\_dict\_\_}\spxextra{net.UVANEMO attribute}, \hyperpage{9}
+  \item \spxentry{\_\_fit()}\spxextra{net.UVANEMO method}, \hyperpage{10}
+  \item \spxentry{\_\_forward\_au\_features()}\spxextra{model.DeepSmileNet method}, \hyperpage{6}
+  \item \spxentry{\_\_getitem\_\_()}\spxextra{dataset.UVANEMODataGenerator method}, \hyperpage{1}
+  \item \spxentry{\_\_init\_\_()}\spxextra{dataset.UVANEMODataGenerator method}, \hyperpage{1}
+  \item \spxentry{\_\_init\_\_()}\spxextra{model.ConvLSTM method}, \hyperpage{5}
+  \item \spxentry{\_\_init\_\_()}\spxextra{model.ConvLSTMCell method}, \hyperpage{5}
+  \item \spxentry{\_\_init\_\_()}\spxextra{model.Convbn method}, \hyperpage{6}
+  \item \spxentry{\_\_init\_\_()}\spxextra{model.DeepSmileNet method}, \hyperpage{6}
+  \item \spxentry{\_\_init\_\_()}\spxextra{model.MultipleDeepSmileNet method}, \hyperpage{7}
+  \item \spxentry{\_\_init\_\_()}\spxextra{model.NONLocalBlock2D method}, \hyperpage{7}
+  \item \spxentry{\_\_init\_\_()}\spxextra{model.TemporalAttension method}, \hyperpage{7}
+  \item \spxentry{\_\_init\_\_()}\spxextra{model.\_NonLocalBlockND method}, \hyperpage{8}
+  \item \spxentry{\_\_init\_\_()}\spxextra{net.UVANEMO method}, \hyperpage{10}
+  \item \spxentry{\_\_init\_features\_data()}\spxextra{dataset.UVANEMODataGenerator method}, 
+		\hyperpage{1}
+  \item \spxentry{\_\_init\_loaders()}\spxextra{net.UVANEMO method}, \hyperpage{10}
+  \item \spxentry{\_\_init\_outputs()}\spxextra{net.UVANEMO method}, \hyperpage{11}
+  \item \spxentry{\_\_init\_video\_data()}\spxextra{dataset.UVANEMODataGenerator method}, 
+		\hyperpage{1}
+  \item \spxentry{\_\_init\_whole\_dataset()}\spxextra{dataset.UVANEMODataGenerator method}, 
+		\hyperpage{1}
+  \item \spxentry{\_\_len\_\_()}\spxextra{dataset.UVANEMODataGenerator method}, \hyperpage{1}
+  \item \spxentry{\_\_module\_\_}\spxextra{dataset.UVANEMODataGenerator attribute}, \hyperpage{1}
+  \item \spxentry{\_\_module\_\_}\spxextra{model.ConvLSTM attribute}, \hyperpage{5}
+  \item \spxentry{\_\_module\_\_}\spxextra{model.ConvLSTMCell attribute}, \hyperpage{5}
+  \item \spxentry{\_\_module\_\_}\spxextra{model.Convbn attribute}, \hyperpage{6}
+  \item \spxentry{\_\_module\_\_}\spxextra{model.DeepSmileNet attribute}, \hyperpage{6}
+  \item \spxentry{\_\_module\_\_}\spxextra{model.MultipleDeepSmileNet attribute}, \hyperpage{7}
+  \item \spxentry{\_\_module\_\_}\spxextra{model.NONLocalBlock2D attribute}, \hyperpage{7}
+  \item \spxentry{\_\_module\_\_}\spxextra{model.TemporalAttension attribute}, \hyperpage{7}
+  \item \spxentry{\_\_module\_\_}\spxextra{model.\_NonLocalBlockND attribute}, \hyperpage{8}
+  \item \spxentry{\_\_module\_\_}\spxextra{net.UVANEMO attribute}, \hyperpage{11}
+  \item \spxentry{\_\_multi\_evaluate\_forward()}\spxextra{net.UVANEMO method}, \hyperpage{11}
+  \item \spxentry{\_\_multi\_forward()}\spxextra{net.UVANEMO method}, \hyperpage{11}
+  \item \spxentry{\_\_orig\_bases\_\_}\spxextra{dataset.UVANEMODataGenerator attribute}, 
+		\hyperpage{1}
+  \item \spxentry{\_\_out()}\spxextra{net.UVANEMO method}, \hyperpage{12}
+  \item \spxentry{\_\_out\_to\_verbose()}\spxextra{net.UVANEMO method}, \hyperpage{12}
+  \item \spxentry{\_\_out\_verbose}\spxextra{net.UVANEMO attribute}, \hyperpage{12}
+  \item \spxentry{\_\_prepare\_loaders()}\spxextra{net.UVANEMO method}, \hyperpage{12}
+  \item \spxentry{\_\_prepare\_output\_models()}\spxextra{net.UVANEMO method}, \hyperpage{12}
+  \item \spxentry{\_\_prepare\_training\_statistics()}\spxextra{net.UVANEMO method}, \hyperpage{12}
+  \item \spxentry{\_\_process\_loader\_data()}\spxextra{net.UVANEMO method}, \hyperpage{12}
+  \item \spxentry{\_\_save\_model()}\spxextra{net.UVANEMO method}, \hyperpage{12}
+  \item \spxentry{\_\_single\_evaluate\_forward()}\spxextra{net.UVANEMO method}, \hyperpage{13}
+  \item \spxentry{\_\_single\_forward()}\spxextra{net.UVANEMO method}, \hyperpage{13}
+  \item \spxentry{\_\_train\_prepare()}\spxextra{net.UVANEMO method}, \hyperpage{13}
+  \item \spxentry{\_\_update\_csv\_labels()}\spxextra{net.UVANEMO method}, \hyperpage{13}
+  \item \spxentry{\_\_update\_csv\_labels\_data()}\spxextra{net.UVANEMO method}, \hyperpage{14}
+  \item \spxentry{\_\_update\_csv\_lossacc\_data()}\spxextra{net.UVANEMO method}, \hyperpage{14}
+  \item \spxentry{\_\_update\_training\_diagram()}\spxextra{net.UVANEMO method}, \hyperpage{14}
+  \item \spxentry{\_\_weakref\_\_}\spxextra{net.UVANEMO attribute}, \hyperpage{14}
+  \item \spxentry{\_fpn\_layers()}\spxextra{model.DeepSmileNet method}, \hyperpage{6}
+  \item \spxentry{\_is\_full\_backward\_hook}\spxextra{model.ConvLSTM attribute}, \hyperpage{5}
+  \item \spxentry{\_is\_full\_backward\_hook}\spxextra{model.ConvLSTMCell attribute}, \hyperpage{5}
+  \item \spxentry{\_is\_full\_backward\_hook}\spxextra{model.Convbn attribute}, \hyperpage{6}
+  \item \spxentry{\_is\_full\_backward\_hook}\spxextra{model.DeepSmileNet attribute}, \hyperpage{6}
+  \item \spxentry{\_is\_full\_backward\_hook}\spxextra{model.MultipleDeepSmileNet attribute}, 
+		\hyperpage{7}
+  \item \spxentry{\_is\_full\_backward\_hook}\spxextra{model.NONLocalBlock2D attribute}, 
+		\hyperpage{7}
+  \item \spxentry{\_is\_full\_backward\_hook}\spxextra{model.TemporalAttension attribute}, 
+		\hyperpage{7}
+  \item \spxentry{\_is\_full\_backward\_hook}\spxextra{model.\_NonLocalBlockND attribute}, 
+		\hyperpage{8}
+
+  \indexspace
+  \bigletter B
+  \item \spxentry{batch\_size\_train}\spxextra{net.UVANEMO attribute}, \hyperpage{14}
+  \item \spxentry{batch\_size\_valtest}\spxextra{net.UVANEMO attribute}, \hyperpage{14}
+
+  \indexspace
+  \bigletter C
+  \item \spxentry{calcminmax\_features}\spxextra{net.UVANEMO attribute}, \hyperpage{14}
+  \item \spxentry{concat\_test}
+    \subitem \spxentry{module}, \hyperpage{1}
+  \item \spxentry{constants}
+    \subitem \spxentry{module}, \hyperpage{1}
+  \item \spxentry{Convbn}\spxextra{class in model}, \hyperpage{6}
+  \item \spxentry{ConvLSTM}\spxextra{class in model}, \hyperpage{5}
+  \item \spxentry{ConvLSTMCell}\spxextra{class in model}, \hyperpage{5}
+
+  \indexspace
+  \bigletter D
+  \item \spxentry{dataset}
+    \subitem \spxentry{module}, \hyperpage{1}
+  \item \spxentry{DeepSmileNet}\spxextra{class in model}, \hyperpage{6}
+
+  \indexspace
+  \bigletter E
+  \item \spxentry{epochs}\spxextra{net.UVANEMO attribute}, \hyperpage{14}
+  \item \spxentry{extract\_frames\_from\_database()}\spxextra{in module extract\_movie\_frames}, 
+		\hyperpage{4}
+  \item \spxentry{extract\_movie\_frames}
+    \subitem \spxentry{module}, \hyperpage{4}
+
+  \indexspace
+  \bigletter F
+  \item \spxentry{features\_path}\spxextra{net.UVANEMO attribute}, \hyperpage{14}
+  \item \spxentry{features\_zip\_to\_dict()}\spxextra{in module dataset}, \hyperpage{1}
+  \item \spxentry{folds\_path}\spxextra{net.UVANEMO attribute}, \hyperpage{14}
+  \item \spxentry{forward()}\spxextra{model.\_NonLocalBlockND method}, \hyperpage{8}
+  \item \spxentry{forward()}\spxextra{model.Convbn method}, \hyperpage{6}
+  \item \spxentry{forward()}\spxextra{model.ConvLSTM method}, \hyperpage{5}
+  \item \spxentry{forward()}\spxextra{model.ConvLSTMCell method}, \hyperpage{5}
+  \item \spxentry{forward()}\spxextra{model.DeepSmileNet method}, \hyperpage{6}
+  \item \spxentry{forward()}\spxextra{model.MultipleDeepSmileNet method}, \hyperpage{7}
+  \item \spxentry{forward()}\spxextra{model.TemporalAttension method}, \hyperpage{7}
+
+  \indexspace
+  \bigletter G
+  \item \spxentry{get\_best\_models}
+    \subitem \spxentry{module}, \hyperpage{5}
+  \item \spxentry{get\_face\_from\_image()}\spxextra{in module extract\_movie\_frames}, 
+		\hyperpage{4}
+
+  \indexspace
+  \bigletter I
+  \item \spxentry{init\_hidden()}\spxextra{model.ConvLSTMCell method}, \hyperpage{5}
+
+  \indexspace
+  \bigletter L
+  \item \spxentry{load\_features\_aus()}\spxextra{in module dataset}, \hyperpage{1}
+  \item \spxentry{load\_features\_auwise()}\spxextra{in module dataset}, \hyperpage{2}
+  \item \spxentry{load\_features\_crossau()}\spxextra{in module dataset}, \hyperpage{2}
+  \item \spxentry{load\_features\_si()}\spxextra{in module dataset}, \hyperpage{2}
+  \item \spxentry{load\_frames()}\spxextra{in module dataset}, \hyperpage{3}
+  \item \spxentry{lr}\spxextra{net.UVANEMO attribute}, \hyperpage{14}
+
+  \indexspace
+  \bigletter M
+  \item \spxentry{main()}\spxextra{in module concat\_test}, \hyperpage{1}
+  \item \spxentry{main()}\spxextra{in module get\_best\_models}, \hyperpage{5}
+  \item \spxentry{main()}\spxextra{in module split\_labels}, \hyperpage{15}
+  \item \spxentry{main()}\spxextra{in module start}, \hyperpage{15}
+  \item \spxentry{model}
+    \subitem \spxentry{module}, \hyperpage{5}
+  \item \spxentry{module}
+    \subitem \spxentry{concat\_test}, \hyperpage{1}
+    \subitem \spxentry{constants}, \hyperpage{1}
+    \subitem \spxentry{dataset}, \hyperpage{1}
+    \subitem \spxentry{extract\_movie\_frames}, \hyperpage{4}
+    \subitem \spxentry{get\_best\_models}, \hyperpage{5}
+    \subitem \spxentry{model}, \hyperpage{5}
+    \subitem \spxentry{net}, \hyperpage{8}
+    \subitem \spxentry{split\_labels}, \hyperpage{15}
+    \subitem \spxentry{start}, \hyperpage{15}
+  \item \spxentry{multi\_train()}\spxextra{net.UVANEMO method}, \hyperpage{14}
+  \item \spxentry{MultipleDeepSmileNet}\spxextra{class in model}, \hyperpage{6}
+
+  \indexspace
+  \bigletter N
+  \item \spxentry{net}
+    \subitem \spxentry{module}, \hyperpage{8}
+  \item \spxentry{NONLocalBlock2D}\spxextra{class in model}, \hyperpage{7}
+
+  \indexspace
+  \bigletter P
+  \item \spxentry{prepare\_data\_concat()}\spxextra{net.UVANEMO method}, \hyperpage{14}
+  \item \spxentry{prepare\_data\_single()}\spxextra{net.UVANEMO method}, \hyperpage{15}
+
+  \indexspace
+  \bigletter R
+  \item \spxentry{read\_au\_txt()}\spxextra{in module dataset}, \hyperpage{3}
+  \item \spxentry{read\_auwise\_txt()}\spxextra{in module dataset}, \hyperpage{3}
+  \item \spxentry{read\_image()}\spxextra{in module dataset}, \hyperpage{3}
+  \item \spxentry{read\_si\_txt()}\spxextra{in module dataset}, \hyperpage{3}
+
+  \indexspace
+  \bigletter S
+  \item \spxentry{single\_train()}\spxextra{net.UVANEMO method}, \hyperpage{15}
+  \item \spxentry{split()}\spxextra{net.UVANEMO method}, \hyperpage{15}
+  \item \spxentry{split\_labels}
+    \subitem \spxentry{module}, \hyperpage{15}
+  \item \spxentry{start}
+    \subitem \spxentry{module}, \hyperpage{15}
+
+  \indexspace
+  \bigletter T
+  \item \spxentry{TemporalAttension}\spxextra{class in model}, \hyperpage{7}
+  \item \spxentry{training}\spxextra{model.\_NonLocalBlockND attribute}, \hyperpage{8}
+  \item \spxentry{training}\spxextra{model.Convbn attribute}, \hyperpage{6}
+  \item \spxentry{training}\spxextra{model.ConvLSTM attribute}, \hyperpage{5}
+  \item \spxentry{training}\spxextra{model.ConvLSTMCell attribute}, \hyperpage{5}
+  \item \spxentry{training}\spxextra{model.DeepSmileNet attribute}, \hyperpage{6}
+  \item \spxentry{training}\spxextra{model.MultipleDeepSmileNet attribute}, \hyperpage{7}
+  \item \spxentry{training}\spxextra{model.NONLocalBlock2D attribute}, \hyperpage{7}
+  \item \spxentry{training}\spxextra{model.TemporalAttension attribute}, \hyperpage{7}
+
+  \indexspace
+  \bigletter U
+  \item \spxentry{UVANEMO}\spxextra{class in net}, \hyperpage{8}
+  \item \spxentry{UVANEMODataGenerator}\spxextra{class in dataset}, \hyperpage{1}
+
+  \indexspace
+  \bigletter V
+  \item \spxentry{videos\_frequency}\spxextra{net.UVANEMO attribute}, \hyperpage{15}
+  \item \spxentry{videos\_path}\spxextra{net.UVANEMO attribute}, \hyperpage{15}
+  \item \spxentry{videos\_zip\_to\_dict()}\spxextra{in module dataset}, \hyperpage{4}
+
+  \indexspace
+  \bigletter W
+  \item \spxentry{write\_movie\_frames()}\spxextra{in module extract\_movie\_frames}, \hyperpage{4}
+
+\end{sphinxtheindex}
